@@ -358,13 +358,22 @@ table.adminlist
 	border:1px solid #999999;
 }
 
-input#csvexport{
-    background:#CCCCCC url('../images/export_excel2.png') no-repeat left;
-    padding-left:24px;
-    border:1px solid #808080;
-    height:24px;
-    cursor:pointer;
+table.adminlist td {
+	padding-left:6px;
+	line-height:20px;
 }
+
+input#csvexport{
+	padding-left:30px;
+	background-image:url('../images/export_excel2.png');
+	background-repeat:no-repeat;
+	background-position:4px center; 
+}
+
+.icon-back:before {
+	content: "\e012";
+}
+
 
 .select_country
 {
