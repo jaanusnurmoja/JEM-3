@@ -1,10 +1,10 @@
 <?php
 /**
- * @version     3.0.1
- * @package     JEM
- * @copyright   Copyright (C) 2013-2014 joomlaeventmanager.net
- * @copyright   Copyright (C) 2005-2009 Christoph Lukes
- * @license     http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
+ * @version 3.0.5
+ * @package JEM
+ * @copyright (C) 2013-2014 joomlaeventmanager.net
+ * @copyright (C) 2005-2009 Christoph Lukes
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 defined('_JEXEC') or die;
 
@@ -42,8 +42,8 @@ class JemViewCategory extends JViewLegacy
 		JHtml::_('stylesheet', 'com_jem/colorpicker.css', array(), true);
 
 		// Load Script
-		$document->addScript(JUri::root().'media/com_jem/js/colorpicker.js');
-
+		JHtml::_('script', 'com_jem/colorpicker.js', array(), true);
+		
 		// build grouplist
 		// @todo: make a form-field for this one
 		$groups 	= $this->get('Groups');

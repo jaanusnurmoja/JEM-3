@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -26,7 +26,7 @@ class JEMOutput {
 			if ($app->input->getInt('print')) {
 				return;
 			} else {
-				echo '<font color="grey">Powered by <a href="http://www.joomlaeventmanager.net" target="_blank">JEM</a></font>';
+				echo 'Powered by <a href="http://www.joomlaeventmanager.net" target="_blank">JEM</a>';
 			}
 		}
 	}
@@ -54,7 +54,7 @@ class JEMOutput {
 
 			# check for icon-setting
 			if ($settings->get('global_show_icons',1)) {
-				$text = JHtml::_('image', 'com_jem/submitevent.png', JText::_('COM_JEM_DELIVER_NEW_EVENT'), NULL, true).' '.JText::_('COM_JEM_DELIVER_NEW_EVENT');;
+				$text = JHtml::_('image', 'com_jem/submitevent.png', JText::_('COM_JEM_DELIVER_NEW_EVENT'), NULL, true);
 			} else {
 				$text = JText::_('COM_JEM_DELIVER_NEW_EVENT');
 			}
@@ -102,7 +102,7 @@ class JEMOutput {
 
 			# check for icons
 			if ($settings->get('global_show_icons',1)) {
-				$text = JHtml::_('image', 'com_jem/addvenue.png', JText::_('COM_JEM_DELIVER_NEW_VENUE'), NULL, true).' '.JText::_('COM_JEM_DELIVER_NEW_VENUE');
+				$text = JHtml::_('image', 'com_jem/addvenue.png', JText::_('COM_JEM_DELIVER_NEW_VENUE'), NULL, true);
 			} else {
 				$text = JText::_('COM_JEM_DELIVER_NEW_VENUE');
 			}
@@ -154,7 +154,7 @@ class JEMOutput {
 
 			if ($task == 'archive') {
 				if ($settings->get('global_show_icons',1)) {
-					$text = JHtml::_('image', 'com_jem/el.png', JText::_('COM_JEM_SHOW_EVENTS'), NULL, true).' '.JText::_('COM_JEM_SHOW_EVENTS');
+					$text = JHtml::_('image', 'com_jem/el.png', JText::_('COM_JEM_SHOW_EVENTS'), NULL, true);
 				} else {
 					$text = JText::_('COM_JEM_SHOW_EVENTS');
 				}
@@ -170,7 +170,7 @@ class JEMOutput {
 				# here we're not in the archive-task
 
 				if ($settings->get('global_show_icons',1)) {
-					$text = JHtml::_('image', 'com_jem/archive_front.png', JText::_('COM_JEM_SHOW_ARCHIVE'), NULL, true).' '.JText::_('COM_JEM_SHOW_ARCHIVE');
+					$text = JHtml::_('image', 'com_jem/archive_front.png', JText::_('COM_JEM_SHOW_ARCHIVE'), NULL, true);
 				} else {
 					$text = JText::_('COM_JEM_SHOW_ARCHIVE');
 				}
@@ -338,7 +338,7 @@ class JEMOutput {
 	{
 		$app 		= JFactory::getApplication();
 		$settings	= JemHelper::globalattribs();
-
+		
 		if ($settings->get('global_show_print_icon',0)) {
 			JHtml::_('bootstrap.tooltip');
 
@@ -346,7 +346,7 @@ class JEMOutput {
 
 			# check for icon setting
 			if ($settings->get('global_show_icons',1)) {
-				$text = JHtml::_('image','system/printButton.png', JText::_('JGLOBAL_PRINT'), NULL, true).' '.JText::_('JGLOBAL_PRINT');
+				$text = JHtml::_('image','system/printButton.png', JText::_('JGLOBAL_PRINT'), NULL, true);
 			} else {
 				$text = JText::_('JGLOBAL_PRINT');
 			}
@@ -416,7 +416,7 @@ class JEMOutput {
 
 			# check for icon-setting
 			if ($settings->get('global_show_icons')) {
-				$text = JHtml::_('image','system/emailButton.png', JText::_('JGLOBAL_EMAIL'), NULL, true).' '.JText::_('JGLOBAL_EMAIL');
+				$text = JHtml::_('image','system/emailButton.png', JText::_('JGLOBAL_EMAIL'), NULL, true);
 			} else {
 				$text = JText::_('JGLOBAL_EMAIL');
 			}
@@ -651,6 +651,7 @@ class JEMOutput {
 	 */
 	static function mapicon($data,$view=false,$params)
 	{
+			
 		$global = JemHelper::globalattribs();
 
 		//stop if disabled
@@ -659,18 +660,12 @@ class JEMOutput {
 		}
 
 		if ($view == 'event') {
-			$tld		= 'event_tld';
-			$lg			= 'event_lg';
 			$mapserv	= $params->get('event_show_mapserv');
 		} else if ($view == 'venues') {
-			$mapserv	= $params->get('global_show_mapserv');
-			$tld		= 'global_tld';
-			$lg			= 'global_lg';
-			$mapserv	= 0;
+			# @todo check
+			$mapserv	= $params->get('show_mapserv');
 		} else {
-			$tld		= 'global_tld';
-			$lg			= 'global_lg';
-			$mapserv	= $params->get('global_show_mapserv');
+			$mapserv	= $params->get('show_mapserv');
 		}
 
 		//Link to map
@@ -689,30 +684,32 @@ class JEMOutput {
 			$data->longitude = null;
 		}
 
-		$url = 'http://maps.google.'.$params->get($tld,'com').'/maps?hl='.$params->get($lg,'com').'&q='.urlencode($data->street.', '.$data->postalCode.' '.$data->city.', '.$data->country.'+ ('.$data->venue.')').'&ie=UTF8&z=15&iwloc=B&output=embed" ';
-
-
 		// google map link or include
 		switch ($mapserv)
 		{
 			case 1:
+				$url = 'http://maps.google.com/maps?&q='.urlencode($data->street.', '.$data->postalCode.' '.$data->city.', '.$data->country.'+ ('.$data->venue.')').'&ie=UTF8&z=15&output=embed" ';
+				
 				// link
 				if($data->latitude && $data->longitude) {
-					$url = 'http://maps.google.'.$params->get($tld).'/maps?hl='.$params->get($lg).'&q=loc:'.$data->latitude.',+'.$data->longitude.'&ie=UTF8&z=15&iwloc=B&output=embed';
+					$url = 'http://maps.google.com/maps?q='.$data->latitude.',+'.$data->longitude.'&ie=UTF8&z=15&output=embed';
 				}
-
+				
 				$message = JText::_('COM_JEM_MAP').':';
 				$attributes = ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}" latitude="" longitude=""';
 				$output = '<dt class="venue_mapicon">'.$message.'</dt><dd class="venue_mapicon"><a class="flyermodal mapicon" title="'.JText::_('COM_JEM_MAP').'" target="_blank" href="'.$url.'"'.$attributes.'>'.$mapimage.'</a></dd>';
 				break;
 
 			case 2:
-				// include iframe
+				$api		= trim($global->get('global_googleapi'));
+				
+				# iframe
 				if($data->latitude && $data->longitude) {
-					$url = 'https://maps.google.com/maps?q=loc:'.$data->latitude.',+'.$data->longitude.'&amp;ie=UTF8&amp;t=m&amp;z=14&amp;iwloc=B&amp;output=embed';
+					$output = '<iframe width="500" height="250" frameborder="0" style="border: 1px solid #000" src="https://www.google.com/maps/embed/v1/search?key='.$api.'&q='.urlencode($data->latitude.',+'.$data->longitude).'"></iframe>';
+				} else {
+					$output = '<iframe width="500" height="250" frameborder="0" style="border: 1px solid #000" src="https://www.google.com/maps/embed/v1/search?key='.$api.'&q='.urlencode($data->street.', '.$data->postalCode.' '.$data->city).'"></iframe>';
 				}
 
-				$output = '<div style="border: 1px solid #000;width:500px;"><iframe width="500" height="250" src="'.$url.'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" ></iframe></div>';
 				break;
 
 			case 3:

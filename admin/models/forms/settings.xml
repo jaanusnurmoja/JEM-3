@@ -19,16 +19,6 @@
 			maxlength="3"
 			required="false"
 		/>
-		<field name="discatheader" type="radio"
-			label="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES"
-			description="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES_DESC"
-			class="btn-group btn-group-yesno"
-			default="0"
-			required="false"
-		>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
 		<field name="recurrence_anticipation" type="text"
 			label="COM_JEM_SETTINGS_RECURRENCE_LIMITDAYS"
 			description="COM_JEM_SETTINGS_RECURRENCE_LIMITDAYS_DESC"
@@ -87,6 +77,7 @@
 		>
 			<option value="0">COM_JEM_EVENT_OFF</option>
 			<option value="1">COM_JEM_LINK_ON_TITLE</option>
+			<option value="2">COM_JEM_SETTINGS_FIELD_LINKTITLE_WHENDESC</option>
 		</field>
 		<field name="formatdate" type="text"
 			label="COM_JEM_SETTINGS_DATE_FORMAT"
@@ -132,13 +123,6 @@
 	<fieldset name="usercontrol"
 		label="COM_JEM_USER_CONTROL"
 	>
-		<field name="datdesclimit" type="text"
-			label="COM_JEM_DESCRIPTION_LIMIT"
-			description="COM_JEM_DESCRIPTION_LIMIT_DESC"
-			class="inputbox"
-			size="5"
-			required="false"
-		/>
 		<field name="imageenabled" type="list"
 			label="COM_JEM_IMAGE_UPLOAD_OPTIONS"
 			description="COM_JEM_IMAGE_UPLOAD_OPTIONS_DESC"
@@ -269,16 +253,6 @@
 	<fieldset name="layoutgenerallayoutsetting"
 		label="COM_JEM_GENERAL_LAYOUT_SETTINGS"
 	>
-		<field name="showtime" type="radio"
-			label="COM_JEM_SETTINGS_FIELD_SHOW_TIME"
-			description="COM_JEM_SETTINGS_FIELD_SHOW_TIME_DESC"
-			class="btn-group btn-group-yesno"
-			default="0"
-			required="false"
-		>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
 		<field name="tablewidth" type="text"
 			label="COM_JEM_FRONT_TABLE_WIDTH"
 			description="COM_JEM_FRONT_TABLE_WIDTH_DESC"
@@ -613,14 +587,7 @@
 				label="COM_JEM_EVENT_FIELD_SHOW_AUTHOR_LABEL"
 				description="COM_JEM_EVENT_FIELD_SHOW_AUTHOR_DESC"
 				class="btn-group btn-group-yesno"
-			>
-				<option	value="0">JNO</option>
-				<option	value="1">JYES</option>
-			</field>
-			<field name="event_link_author" type="radio"
-				label="COM_JEM_EVENT_FIELD_LINK_AUTHOR_LABEL"
-				description="COM_JEM_EVENT_FIELD_LINK_AUTHOR_DESC"
-				class="btn-group btn-group-yesno"
+				default="0"
 			>
 				<option	value="0">JNO</option>
 				<option	value="1">JYES</option>
@@ -629,6 +596,7 @@
 				label="COM_JEM_EVENT_FIELD_SHOW_CONTACT_LABEL"
 				description="COM_JEM_EVENT_FIELD_SHOW_CONTACT_DESC"
 				class="btn-group btn-group-yesno"
+				default="0"
 			>
 				<option	value="0">JNO</option>
 				<option	value="1">JYES</option>
@@ -673,14 +641,6 @@
 				<option	value="0">JNO</option>
 				<option	value="1">JYES</option>
 			</field>
-			<field name="event_show_noauth" type="radio"
-				label="JGLOBAL_SHOW_UNAUTH_LINKS_LABEL"
-				description="JGLOBAL_SHOW_UNAUTH_LINKS_DESC"
-				class="btn-group btn-group-yesno"
-			>
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-			</field>
 			<field name="event_show_readmore" type="radio"
 				label="JGLOBAL_SHOW_READMORE_LABEL"
 				description="JGLOBAL_SHOW_READMORE_DESC"
@@ -699,6 +659,22 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="event_ical_filename_type" type="list"
+				description="COM_JEM_EVENT_FIELD_ICAL_FILENAME_TYPE_DESC"
+				label="COM_JEM_EVENT_FIELD_ICAL_FILENAME_TYPE"
+				default="2"
+			>
+				<option value="1">COM_JEM_EVENT_FIELD_ICAL_FILENAME_TYPE_LNGSTRNG</option>
+				<option value="2">COM_JEM_EVENT_FIELD_ICAL_FILENAME_TYPE_DEFAULT</option>
+				<option value="3">COM_JEM_EVENT_FIELD_ICAL_FILENAME_TYPE_CUSTOM</option>
+			</field>
+			<field name="event_ical_filename" type="text"
+				class="inputbox"
+				size="40"
+				label="COM_JEM_EVENT_FIELD_ICAL_FILENAME"
+				description="COM_JEM_EVENT_FIELD_ICAL_FILENAME_DESC"
+				required="false"
+			/>
 		</fieldset>
 
 		<fieldset name="globalparam"
@@ -723,15 +699,6 @@
 			>
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
-			</field>
-			<field name="show_dropwdownbutton" type="radio"
-				label="COM_JEM_SETTINGS_FIELD_SHOW_DROPDOWN_BUTTON"
-				description="COM_JEM_SETTINGS_FIELD_SHOW_DROPDOWN_BUTTON_DESC"
-				class="btn-group btn-group-yesno"
-				default="1"
-			>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
 			</field>
 			<field type="spacer"></field>
 			<field name="global_show_icons" type="radio"
@@ -806,8 +773,8 @@
 				default="1"
 				required="false"
 			>
-				<option value="0">COM_JEM_USERNAME</option>
-				<option value="1">COM_JEM_NAME</option>
+				<option value="0">COM_JEM_NAME</option>
+				<option value="1">COM_JEM_USERNAME</option>
 			</field>
 			<field name="show_poweredby" type="radio"
 				label="COM_JEM_SETTINGS_FIELD_SHOW_POWEREDBY"
@@ -817,15 +784,6 @@
 			>
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
-			</field>
-			<field
-				name="show_noauth"
-				type="list"
-				default="0"
-				label="JGLOBAL_SHOW_UNAUTH_LINKS_LABEL"
-				description="JGLOBAL_SHOW_UNAUTH_LINKS_DESC">
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
 			</field>
 			<field
 				name="default_Itemid"
@@ -925,22 +883,6 @@
 				<option value="2">COM_JEM_GOOGLE_MAP_DISP</option>
 				<option value="3">COM_JEM_GOOGLE_MAP_DISP_API</option>
 			</field>
-			<field name="global_tld" type="text"
-				label="COM_JEM_GOOGLE_MAP_TLD"
-				description="COM_JEM_GOOGLE_MAP_TLD_DESC"
-				class="inputbox"
-				size="10"
-				maxlength="10"
-				required="false"
-			/>
-			<field name="global_lg" type="text"
-				label="COM_JEM_GOOGLE_MAP_LG"
-				description="COM_JEM_GOOGLE_MAP_LG_DESC"
-				class="inputbox"
-				size="10"
-				maxlength="10"
-				required="false"
-			/>
 			<field name="global_show_ownedvenuesonly" type="list"
 				label="COM_JEM_SETTINGS_FIELD_SHOW_OWNEDVENUESONLY"
 				description="COM_JEM_SETTINGS_FIELD_SHOW_OWNEDVENUESONLY_DESC"
@@ -1025,6 +967,23 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+			<field name="event_attendeelist_visiblefor" type="list"
+				label="COM_JEM_EVENT_FIELD_ATTENDEELIST_VISIBLEFOR"
+				description="COM_JEM_EVENT_FIELD_ATTENDEELIST_VISIBLEFOR_DESC"
+			>
+				<option	value="0">COM_JEM_GLOBAL_FIELD_GUEST</option>
+				<option	value="1">COM_JEM_GLOBAL_FIELD_REGISTERED</option>
+				<option	value="2">COM_JEM_GLOBAL_FIELD_BOTH</option>
+			</field>
+			<field name="img_position" type="list"
+			label="COM_JEM_SETTINGS_FIELD_IMAGE_POSITION"
+			description="COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_DESC"
+			default="0"
+			required="false"
+		>
+			<option value="0">COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_TOP</option>
+			<option value="1">COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_RGHTSD</option>
+		</field>
 		</fieldset>
 
 		<fieldset name="evvenues"
@@ -1073,22 +1032,6 @@
 				<option value="2">COM_JEM_GOOGLE_MAP_DISP</option>
 				<option value="3">COM_JEM_GOOGLE_MAP_DISP_API</option>
 			</field>
-			<field name="event_tld" type="text"
-				label="COM_JEM_GOOGLE_MAP_TLD"
-				description="COM_JEM_GOOGLE_MAP_TLD_DESC"
-				class="inputbox"
-				size="10"
-				maxlength="10"
-				required="false"
-			/>
-			<field name="event_lg" type="text"
-				label="COM_JEM_GOOGLE_MAP_LG"
-				description="COM_JEM_GOOGLE_MAP_LG_DESC"
-				class="inputbox"
-				size="10"
-				maxlength="10"
-				required="false"
-			/>
 		</fieldset>
 
 		<fieldset name="evregistration"
@@ -1103,6 +1046,7 @@
 			>
 				<option value="0">COM_JEM_DONT_USE_COM_SOL</option>
 				<option value="1">COM_JEM_COMBUILDER</option>
+				<option value="2">COM_JEM_COM_SOL_KUNENA</option>
 			</field>
 			<field name="event_comunoption" type="list"
 				label="COM_JEM_TYPE_COM_INTEGRATION"
@@ -1124,15 +1068,6 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
-			<field name="img_position" type="list"
-			label="COM_JEM_SETTINGS_FIELD_IMAGE_POSITION"
-			description="COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_DESC"
-			default="0"
-			required="false"
-		>
-			<option value="0">COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_TOP</option>
-			<option value="1">COM_JEM_SETTINGS_FIELD_IMAGE_POSITION_RGHTSD</option>
-		</field>
 		</fieldset>
 		
 		<fieldset name="usercontrolaceventguest"
@@ -1413,4 +1348,136 @@
         		description="COM_JEM_SETTINGS_FIELD_CSS_COLOR_FONT_TABLE_TD_A_DESC" />
 		</fieldset>
 	</fields>
+	<!-- settings for Venue-view -->
+<fields name="vvenue">
+<fieldset name="vvenue">
+	<field name="show_locdescription" type="radio"
+				label="COM_JEM_DISPLAY_VENUE_DESCRIPT"
+				description="COM_JEM_DISPLAY_VENUE_DESCRIPT_DESC"
+				class="btn-group btn-group-yesno"
+				default="1"
+				required="false"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="show_detailsadress" type="radio"
+				label="COM_JEM_DISPLAY_ADDRESS"
+				description="COM_JEM_DISPLAY_ADDRESS_DESC"
+				class="btn-group btn-group-yesno"
+				default="1"
+				required="false"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="show_detlinkvenue" type="list"
+				label="COM_JEM_DISPLAY_ADDRESS"
+				description="COM_JEM_DISPLAY_ADDRESS_DESC"
+				class="inputbox"
+				default="0"
+				required="false"
+			>
+				<option value="0">COM_JEM_NO_LINK</option>
+				<option value="1">COM_JEM_LINK_TO_URL</option>
+			</field>
+			<field name="show_mapserv" type="list"
+				label="COM_JEM_DISPLAY_LINK_TO_MAP"
+				description="COM_JEM_DISPLAY_LINK_TO_MAP_DESC"
+				class="inputbox"
+				default="0"
+				required="false"
+			>
+				<option value="0">COM_JEM_NO_MAP_SERVICE</option>
+				<option value="1">COM_JEM_GOOGLE_MAP_LINK</option>
+				<option value="2">COM_JEM_GOOGLE_MAP_DISP</option>
+				<option value="3">COM_JEM_GOOGLE_MAP_DISP_API</option>
+			</field>
+</fieldset>
+</fields>
+<!-- settings for Venues-view -->
+<fields name="vvenues">
+<fieldset name="vvenues">
+	<field name="show_locdescription" type="radio"
+				label="COM_JEM_DISPLAY_VENUE_DESCRIPT"
+				description="COM_JEM_DISPLAY_VENUE_DESCRIPT_DESC"
+				class="btn-group btn-group-yesno"
+				default="1"
+				required="false"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="show_detailsadress" type="radio"
+				label="COM_JEM_DISPLAY_ADDRESS"
+				description="COM_JEM_DISPLAY_ADDRESS_DESC"
+				class="btn-group btn-group-yesno"
+				default="1"
+				required="false"
+			>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field name="show_mapserv" type="list"
+				label="COM_JEM_DISPLAY_LINK_TO_MAP"
+				description="COM_JEM_DISPLAY_LINK_TO_MAP_DESC"
+				class="inputbox"
+				default="0"
+				required="false"
+			>
+				<option value="0">COM_JEM_NO_MAP_SERVICE</option>
+				<option value="1">COM_JEM_GOOGLE_MAP_LINK</option>
+				<option value="2">COM_JEM_GOOGLE_MAP_DISP</option>
+			</field>
+</fieldset>
+</fields>
+
+
+<!-- settings for Categories-view -->
+<fields name="vcategories">
+<fieldset name="vcategories">
+	<field name="show_category_image" type="radio"
+		label="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES"
+		description="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES_DESC"
+		class="btn-group btn-group-yesno"
+		default="0"
+		required="false"
+		>
+		<option value="0">JNO</option>
+		<option value="1">JYES</option>
+	</field>
+</fieldset>
+</fields>
+
+<!-- settings for Category-view -->
+<fields name="vcategory">
+<fieldset name="vcategory">
+	<field name="show_category_image" type="radio"
+		label="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES"
+		description="COM_JEM_SETTINGS_SHOW_CATEGORY_IMAGES_DESC"
+		class="btn-group btn-group-yesno"
+		default="0"
+		required="false"
+		>
+		<option value="0">JNO</option>
+		<option value="1">JYES</option>
+	</field>
+</fieldset>
+</fields>
+
+<!-- settings for Calendar-view -->
+<fields name="vcalendar">
+<fieldset name="vcalendar">
+	<field name="show_venue" type="radio"
+		label="COM_JEM_SETTINGS_FIELD_VIEW_CALENDAR_SHOW_VENUE"
+		description="COM_JEM_SETTINGS_FIELD_VIEW_CALENDAR_SHOW_VENUE_DESC"
+		class="btn-group btn-group-yesno"
+		default="0"
+		required="false"
+		>
+		<option value="0">JNO</option>
+		<option value="1">JYES</option>
+	</field>
+</fieldset>
+</fields>
 </form>

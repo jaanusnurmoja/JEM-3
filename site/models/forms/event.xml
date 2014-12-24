@@ -301,23 +301,25 @@
 			default="0"
 			label="COM_JEM_EVENT_FIELD_RECURRENCE_FREQ"
 			filter="integer"
+			class="inputbox"
 		>
 			<option value="0">COM_JEM_NOTHING</option>
 			<option value="1">COM_JEM_DAYLY</option>
 			<option value="2">COM_JEM_WEEKLY</option>
 			<option value="3">COM_JEM_MONTHLY</option>
 			<option value="4">COM_JEM_YEARLY</option>
-			<option value="5">COM_JEM_WEEKDAY</option>
 		</field>
 		<field name="recurrence_interval" type="text"
 			default="1"
 			label="COM_JEM_EVENT_FIELD_RECURRENCE_INTERVAL"
 			filter="integer"
+			class="inputbox"
 		/>
 		<field name="recurrence_weekday" type="list"
 			default="1"
 			multiple="true"
 			size="5"
+			class="inputbox"
 			label="COM_JEM_EVENT_FIELD_RECURRENCE_SELECTLIST_WEEKDAY"
 		>
 			<option value="MO">COM_JEM_MONDAY</option>
@@ -372,5 +374,22 @@
 				description="COM_JEM_EVENT_FIELD_RECURRENCE_COUNT_DESC"
 			/>
 	</fieldset>
-
+	<fieldset name="meta"
+		label="JGLOBAL_FIELDSET_METADATA_OPTIONS"
+	>
+		<field name="meta_keywords" type="textarea"
+			id="meta_keywords"
+			label="JFIELD_META_KEYWORDS_LABEL"
+			description="JFIELD_META_KEYWORDS_DESC"
+			class="inputbox"
+			rows="3" cols="30"
+		/>
+		<field name="meta_description" type="textarea"
+			id="meta_description"
+			label="JFIELD_META_DESCRIPTION_LABEL"
+			description="JFIELD_META_DESCRIPTION_DESC"
+			class="inputbox"
+			rows="3" cols="30"
+		/>
+	</fieldset>
 </form>

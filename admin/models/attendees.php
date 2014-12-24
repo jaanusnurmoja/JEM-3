@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -118,6 +118,7 @@ class JemModelAttendees extends JModelList
 		$query->where('r.event = '.$this->_eid);
 		
 		$filter_waiting = $this->getState('filter.waiting');
+		
 		if (!empty($filter_waiting)) {
 			$query->where('(a.waitinglist = 0 OR r.waiting = '.$db->quote($filter_waiting-1).')');
 		}
@@ -154,7 +155,7 @@ class JemModelAttendees extends JModelList
 		$orderDirn	= $this->state->get('list.direction','asc');
 		
 		$query->order($db->escape($orderCol.' '.$orderDirn));
-				
+
 		return $query;
 		
 	}

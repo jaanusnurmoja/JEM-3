@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -8,9 +8,9 @@
  */
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tabstate');
 
 // Create shortcut to parameters.
 $params		= $this->item->params;
@@ -30,38 +30,54 @@ $mapType = $this->mapType;
 	}
 </script>
 <script type="text/javascript">
-	window.addEvent('domready', function(){
+jQuery(function() {
 		setAttribute();
 		test();
+
+		jQuery("#inputmeta").click(function() {
+			var city		= jQuery("#jform_city");
+			var venue		= jQuery("#jform_venue");
+			var keywords	= jQuery("#jform_meta_keywords");
+
+			if (keywords.val() != "") {
+				keywords.append(", ");
+			}
+
+			if (venue.val() == "") {
+				keywords.append(venue.val());
+			}
+
+			if (city.val() == "") {
+				keywords.append(venue.val());
+			}
+
+			if (city.val() != "" && venue.val() != "") {
+				keywords.append(venue.val()+', '+city.val());
+			}
+		})
 	});
 
 	function setAttribute(){
-		document.getElementById("tmp_form_postalCode").setAttribute("geo-data", "postal_code");
-		document.getElementById("tmp_form_city").setAttribute("geo-data", "locality");
-		document.getElementById("tmp_form_state").setAttribute("geo-data", "administrative_area_level_1");
-		document.getElementById("tmp_form_street").setAttribute("geo-data", "street_address");
-		document.getElementById("tmp_form_route").setAttribute("geo-data", "route");
-		document.getElementById("tmp_form_streetnumber").setAttribute("geo-data", "street_number");
-		document.getElementById("tmp_form_country").setAttribute("geo-data", "country_short");
-		document.getElementById("tmp_form_latitude").setAttribute("geo-data", "lat");
-		document.getElementById("tmp_form_longitude").setAttribute("geo-data", "lng");
-		document.getElementById("tmp_form_venue").setAttribute("geo-data", "name");	
-	}
-
-	function meta(){
-		var f = document.getElementById('venue-form');
-		if(f.jform_meta_keywords.value != "") f.jform_meta_keywords.value += ", ";
-		f.jform_meta_keywords.value += f.jform_venue.value+', ' + f.jform_city.value;
+		jQuery("#tmp_form_postalCode").attr("geo-data", "postal_code");
+		jQuery("#tmp_form_city").attr("geo-data", "locality");
+		jQuery("#tmp_form_state").attr("geo-data", "administrative_area_level_1");
+		jQuery("#tmp_form_street").attr("geo-data", "street_address");
+		jQuery("#tmp_form_route").attr("geo-data", "route");
+		jQuery("#tmp_form_streetnumber").attr("geo-data", "street_number");
+		jQuery("#tmp_form_country").attr("geo-data", "country_short");
+		jQuery("#tmp_form_latitude").attr("geo-data", "lat");
+		jQuery("#tmp_form_longitude").attr("geo-data", "lng");
+		jQuery("#tmp_form_venue").attr("geo-data", "name");	
 	}
 
 	function test(){			
-		var form = document.getElementById('venue-form');
-		var map = $('jform_map');
-		var streetcheck = $(form.jform_street).hasClass('required');
+		var form 		= document.getElementById('venue-form');
+		var map = jQuery('#jform_map');
+		var streetcheck = jQuery(form.jform_street).hasClass('required');
 
 		if(map && map.checked == true) {
-			var lat = $('jform_latitude');
-			var lon = $('jform_longitude');
+			var lat = jQuery('#jform_latitude');
+			var lon = jQuery('#jform_longitude');
 
 			if(lat.value == ('' || 0.000000) || lon.value == ('' || 0.000000)) {
 				if(!streetcheck) {
@@ -80,25 +96,24 @@ $mapType = $this->mapType;
 	}
 
 	function addrequired(){
-		var form = document.getElementById('venue-form');
+		var form = jQuery('#venue-form');
 
-		$(form.jform_street).addClass('required');
-		$(form.jform_postalCode).addClass('required');
-		$(form.jform_city).addClass('required');
-		$(form.jform_country).addClass('required');
+		jQuery(form.jform_street).addClass('required');
+		jQuery(form.jform_postalCode).addClass('required');
+		jQuery(form.jform_city).addClass('required');
+		jQuery(form.jform_country).addClass('required');
 	}
 
 	function removerequired(){
 		var form = document.getElementById('venue-form');
 
-		$(form.jform_street).removeClass('required');
-		$(form.jform_postalCode).removeClass('required');
-		$(form.jform_city).removeClass('required');
-		$(form.jform_country).removeClass('required');
+		jQuery(form.jform_street).removeClass('required');
+		jQuery(form.jform_postalCode).removeClass('required');
+		jQuery(form.jform_city).removeClass('required');
+		jQuery(form.jform_country).removeClass('required');
 	}
 	
 	jQuery(function(){
-
 		var chkGeocode = function() {
 		var chk = jQuery( "#geocode:checked" ).length;
 		if (chk) {
@@ -141,23 +156,23 @@ $mapType = $this->mapType;
 		});
 
 		jQuery("#cp-latlong").click(function() {
-			document.getElementById("jform_latitude").value = document.getElementById("tmp_form_latitude").value;
-			document.getElementById("jform_longitude").value = document.getElementById("tmp_form_longitude").value;
+			jQuery("#jform_latitude").val(jQuery("#tmp_form_latitude").val());
+			jQuery("#jform_longitude").val(jQuery("#tmp_form_longitude").val());
 			test();
 		});
 
 		jQuery("#cp-address").click(function() {
-			document.getElementById("jform_street").value = document.getElementById("tmp_form_street").value;
-			document.getElementById("jform_postalCode").value = document.getElementById("tmp_form_postalCode").value;
-			document.getElementById("jform_city").value = document.getElementById("tmp_form_city").value;
-			document.getElementById("jform_state").value = document.getElementById("tmp_form_state").value;	
-			document.getElementById("jform_country").value = document.getElementById("tmp_form_country").value;
+			jQuery("#jform_street").val(jQuery("#tmp_form_street").val());
+			jQuery("#jform_postalCode").val(jQuery("#tmp_form_postalCode").val());
+			jQuery("#jform_city").val(jQuery("#tmp_form_city").val());
+			jQuery("#jform_state").val(jQuery("#tmp_form_state").val());	
+			jQuery("#jform_country").val(jQuery("#tmp_form_country").val());
 		});
 
 		jQuery("#cp-venue").click(function() {
-			var venue = document.getElementById("tmp_form_venue").value;
+			var venue = jQuery("#tmp_form_venue").val();
 			if (venue) {
-				document.getElementById("jform_venue").value = venue;
+				jQuery("#jform_venue").val(venue);
 			}
 		});
 
@@ -176,18 +191,11 @@ $mapType = $this->mapType;
 
 	jQuery("#geocode" ).on("click", chkGeocode );
 
+	jQuery('#jform_map').on('keyup keypress blur change', test);
+	jQuery('#jform_latitude').on('keyup keypress blur change', test);
+	jQuery('#jform_longitude').on('keyup keypress blur change', test);
 
-		jQuery('#jform_map').on('keyup keypress blur change', function() {
-		    test();
-		});
 
-		jQuery('#jform_latitude').on('keyup keypress blur change', function() {
-		    test();
-		});
-
-		jQuery('#jform_longitude').on('keyup keypress blur change', function() {
-		    test();
-		});
 	});
 	</script>
 
@@ -221,7 +229,7 @@ $mapType = $this->mapType;
 		<div class="clr"> </div>
 		
 			<?php if ($this->params->get('showintrotext')) : ?>
-			<div class="description no_space floattext">
+			<div class="description no_space clearfix">
 				<?php echo $this->params->get('introtext'); ?>
 			</div>
 			<?php endif; ?>
@@ -248,6 +256,7 @@ $mapType = $this->mapType;
 					 echo $this->form->renderField('longitude');
 					 echo $this->form->renderField('url');
 					 echo $this->form->renderField('published');
+					 echo $this->form->renderField('map');
 					 ?>
 			</fieldset>
 			
@@ -259,16 +268,9 @@ $mapType = $this->mapType;
 			
 			</fieldset>
 			
-
 			<!-- VENUE-GEODATA-->
 			<fieldset class="form-horizontal" id="geodata">
 			<legend><?php echo JText::_('COM_JEM_FIELDSET_GEODATA'); ?></legend>
-			
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('map'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('map'); ?></div>
-			</div>
-			
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('geocode'); ?></div>
 				<div class="controls"> <input type="checkbox" id="geocode" /></div>
@@ -353,7 +355,7 @@ $mapType = $this->mapType;
 			<!-- META -->
 			<fieldset class="form-horizontal">
 				<legend><?php echo JText::_('COM_JEM_META_HANDLING'); ?></legend>
-					<input type="button" class="btn" value="<?php echo JText::_('COM_JEM_ADD_VENUE_CITY'); ?>" onclick="meta()" />
+					<input id="inputmeta" type="button" class="btn" value="<?php echo JText::_('COM_JEM_ADD_VENUE_CITY'); ?>" />
 					<?php foreach($this->form->getFieldset('meta') as $field): ?>
 					<div class="control-group">
 						<div class="control-label"><?php echo $field->label; ?></div>

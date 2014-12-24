@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -246,14 +246,13 @@ class JEMControllerEditvenue extends JControllerForm
 
 	$task = $this->getTask();
 	if ($task == 'save' || $task == 'apply') {
-		// doesn't work on new venues - get values from model instead
-		//$isNew 	= ($validData['id']) ? false : true;
-		//$id 	= $validData['id'];
 		$isNew = $model->getState('editvenue.new');
 		$id    = $model->getState('editvenue.id');
 
-		if (JPluginHelper::importPlugin('jem','mailer')) {
-			JPluginHelper::importPlugin('jem');
+		$enabled = JPluginHelper::isEnabled('jem','mailer');
+	
+		if ($enabled) {
+			JPluginHelper::importPlugin('jem','mailer');
 			$dispatcher = JEventDispatcher::getInstance();
 			$dispatcher->trigger('onVenueEdited', array($id, $isNew));
 		} else {

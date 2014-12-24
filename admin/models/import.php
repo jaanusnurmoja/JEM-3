@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -498,192 +498,33 @@ class JEMModelImport extends JModelLegacy {
 		}
 		
 		if ($otherPrefix == 'true') {
-			# at this point we know that the user did fill in a prefix to search for
 			
-			
-			############
-			## EVENTS ##
-			############
-			
-			# detect the fields of the event-table
-			$query 			= $db->getQuery(true);
-			$event_result 	= array();
-			
-			try
-			{
-				$db->setQuery('SHOW FULL COLUMNS FROM ' . $prefix.'jem_events');
-				$fields = $db->loadObjectList();
-							
-				foreach ($fields as $field){
-					$event_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
-				}
-
-			
-				$event_result = array_keys($event_result);
-			}
-			catch (Exception $e)
-			{
-				$event_result = false;
-			}
-			
-			
-			##############
-			## SETTINGS ##
-			##############
-			
-			
-			# detect the fields of the settings-table
+			# detect the fields of the extensions-table
 			$query = $db->getQuery(true);
-			$settings_result = array();
-			
+			$tableresult = array();
+				
 			try
 			{
 				$db->setQuery('SHOW FULL COLUMNS FROM ' . $prefix.'jem_settings');
 				$fields = $db->loadObjectList();
-							
+					
 				foreach ($fields as $field){
-					$settings_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
+					$tableresult[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
 				}
-
 			
-				$settings_result = array_keys($settings_result);
+					
+				$result = array_keys($tableresult);
 			}
 			catch (Exception $e)
 			{
-				$settings_result = false;
+				$result = false;
 			}
 			
-			
-			################
-			## CATEGORIES ##
-			################
-			
-			# detect the fields of the categories-table
-			$query 				= $db->getQuery(true);
-			$categories_result 	= array();
-			
-			try
-			{
-				$db->setQuery('SHOW FULL COLUMNS FROM ' . $prefix.'jem_categories');
-				$fields = $db->loadObjectList();
-						
-				foreach ($fields as $field){
-					$categories_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
-				}
-								
-				$categories_result = array_keys($categories_result);
+			if ($result) {
+				$version = JemHelper::getParam(1,'version',1,'com_jem',$prefix);
+			} else {
+				$version = null;
 			}
-			catch (Exception $e)
-			{
-				$categories_result = false;
-			}
-			
-			
-			##################
-			## GROUPMEMBERS ##
-			##################
-				
-			# detect the fields of the groupmembers-table
-			$query 					= $db->getQuery(true);
-			$groupmembers_result 	= array();
-			
-			try
-			{
-				$db->setQuery('SHOW FULL COLUMNS FROM ' . $prefix.'jem_groupmembers');
-				$fields = $db->loadObjectList();
-			
-				foreach ($fields as $field){
-					$groupmembers_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
-				}
-			
-				$groupmembers_result = array_keys($groupmembers_result);
-			}
-			catch (Exception $e)
-			{
-				$groupmembers_result = false;
-			}
-			
-			
-			############
-			## VENUES ##
-			############
-			
-			# detect the fields of the venues-table
-			$query			= $db->getQuery(true);
-			$venues_result 	= array();
-			
-			try
-			{
-				# Set the query to get the table fields statement.
-				$db->setQuery('SHOW FULL COLUMNS FROM ' . $prefix.'jem_venues');
-				$fields = $db->loadObjectList();
-						
-				foreach ($fields as $field){
-					$venues_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
-				}
-				
-				$venues_result = array_keys($venues_result);
-			}
-			catch (Exception $e)
-			{
-				$groupmembers_result = false;
-			}
-			
-
-			####################
-			## VERSION OUTPUT ##
-			####################
-			
-			$version	= null;
-			$continue	= false;
-			
-			if ($settings_result) {
-				if (in_array('css',$settings_result)) {
-					$version = '1.9.7';
-					$continue = false;
-				} else {
-					$continue = true;
-				}
-			}
-			
-			if ($categories_result && $continue) {
-				if (in_array('email',$categories_result)) {
-					$version = '1.9.6';
-					$continue = false;
-				} else {
-					$continue = true;
-				}
-			}
-			
-			
-			if ($categories_result && $continue) {
-				if (in_array('lft',$categories_result)) {
-					$version = '1.9.5';
-					$continue = false;
-				} else {
-					$continue = true;
-				}
-			}
-			
-			if ($groupmembers_result && $continue) {
-				if (in_array('id',$groupmembers_result)) {
-					$version = '1.9.4';
-					$continue = false;
-				} else {
-					$continue = true;
-				}
-			}
-			if ($venues_result && $continue) {	
-				if (in_array('id',$venues_result)) {
-					$version = '1.9.3';
-					$continue = false;
-				} else {
-					$continue = true;
-				}
-			}
-			
-			return $version;
-			
 		}
 		
 		
@@ -773,8 +614,7 @@ class JEMModelImport extends JModelLegacy {
 				$el10x = false;
 				JError::$legacy = $legacyValue;
 			}
-				
-				
+								
 			if ($el10x == false) {
 			
 				##################
@@ -782,10 +622,10 @@ class JEMModelImport extends JModelLegacy {
 				###################
 			
 				# now we'll check if it's v1.1
+				
 				$db = $this->_db;
 				$query = $db->getQuery(true);
-				$query->select('ownedvenuesonly');
-				$query->from($this->prefix.'eventlist_settings');
+				$query = 'SHOW COLUMNS FROM '.$this->prefix.'eventlist_settings LIKE "ownedvenuesonly"';
 				$db->setQuery($query);
 					
 				# Set legacy to false to be able to catch DB errors.
@@ -1140,7 +980,7 @@ class JEMModelImport extends JModelLegacy {
 	 *
 	 * @todo: increment catid when catid=1 exists.
 	 */
-	public function transformEventlistData($tablename, &$data) {
+	public function transformEventlistData($tablename, &$data,$version) {
 		
 		# in here we will pass the field-data of the table
 		# and rearrange it a bit
@@ -1166,21 +1006,35 @@ class JEMModelImport extends JModelLegacy {
 		
 		# cats_event_relations
 		if($tablename == "eventlist_cats_event_relations") {
-			$dataNew = array();
-			foreach($data as $row) {
-				// Category-event relations is now stored in seperate table
-				$rowNew = new stdClass();
-				$rowNew->catid = $row->catsid;
-				$rowNew->itemid = $row->id;
-				$rowNew->ordering = 0;
-
-				// JEM now has a root category, so we shift IDs by 1
-				$rowNew->catid++;
-
-				$dataNew[] = $rowNew;
+			
+			# check version
+			if ($version == '1.1.x') {
+				$dataNew = array();
+				foreach($data as $row) {
+					// JEM now has a root category, so we shift IDs by 1
+					$rowNew = new stdClass();
+					$rowNew->catid = $row->catid;
+					$rowNew->itemid = $row->itemid;
+					$rowNew->catid++;
+					$dataNew[] = $rowNew;
+				}
+				return $dataNew;
+			} else {
+				$dataNew = array();
+				foreach($data as $row) {
+					// Category-event relations is now stored in seperate table
+					$rowNew = new stdClass();
+					$rowNew->catid = $row->catsid;
+					$rowNew->itemid = $row->id;
+					$rowNew->ordering = 0;
+				
+					// JEM now has a root category, so we shift IDs by 1
+					$rowNew->catid++;
+				
+					$dataNew[] = $rowNew;
+				}
+				return $dataNew;
 			}
-
-			return $dataNew;
 		}
 
 		# events
@@ -1209,7 +1063,8 @@ class JEMModelImport extends JModelLegacy {
 				}
 			}
 		}
-
+		
+	
 		# groupmembers
 		# groups
 

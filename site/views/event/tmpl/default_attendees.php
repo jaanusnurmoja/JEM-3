@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -10,21 +10,19 @@
  */
 
 defined('_JEXEC') or die;
-$user				= JFactory::getUser();
-$userId				= $user->get('id');
+$user		= JFactory::getUser();
+$userId		= $user->get('id');
+$params		= $this->item->params;
 ?>
 
 <?php
 if (!($this->formhandler == 2) && !($this->formhandler == 1)) { 
 ?>
 
-<div class="row-fluid">
-<div class="span12">
-<div class="span7">
-
-
-<div class="dl">
-	<dl class="">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-7">
+	<dl>
 		<?php 
 		if ($this->item->maxplaces > 0 ) {?>
 			<dt class=""><?php echo JText::_('COM_JEM_MAX_PLACES').':';?></dt>
@@ -52,34 +50,44 @@ if (!($this->formhandler == 2) && !($this->formhandler == 1)) {
 		<?php } ?>
 		
 		<?php 
-		if (!(empty($this->registers))){ ?>
+		if ($this->item->booked > 0){ ?>
 		<dt class=""><?php echo JText::_('COM_JEM_REGISTERED_USERS').':';?></dt>
-		<dd class=""><?php echo count($this->registers); ?></dd>
+		<dd class=""><?php echo $this->item->booked; ?></dd>
 		<?php } ?>
-		
 	</dl>
 </div>
-</div><!-- end span7 -->
-
-
-<div class="span5">
+<div class="col-md-5">
 </div>
 
-</div><!-- end span 12 -->
-</div><!-- end span row-fluid -->
+</div>
+</div><!-- end container-fluid -->
 <?php } ?>
 
 <!-- Attending users -->
-
 <?php
-//only set style info if users already have registered and user is allowed to see it
-if ($this->registers && $userId && $this->showNameAttendee) :
+$type_attendee = $params->get('event_attendeelist_visiblefor','0');
+
+if ($type_attendee == 0) {
+# visible for guest
+	$check = $params->get('event_show_name_attendee','1') && $user->get('guest') == true;
+}
+
+if ($type_attendee == 1) {
+# visible for registered
+	$check = $params->get('event_show_name_attendee','1') && $userId == true;	
+}
+
+if ($type_attendee == 2) {
+	# visible for registered + guest 
+	$check = $params->get('event_show_name_attendee','1') && $user->get('guest') == true || $params->get('event_show_name_attendee','2') && $userId == true;
+}
+
+
+if ( $check || JFactory::getUser()->authorise('core.manage')) :
 ?>
 
-
-
-<div class="row-fluid">
-<div class="span12 userbox">
+<div class="container-fluid">
+<div class="row userbox">
 
 <!-- output names -->
 	<span class="register label label-info"><?php echo JText::_('COM_JEM_REGISTERED_USERS'); ?></span>
@@ -87,51 +95,108 @@ if ($this->registers && $userId && $this->showNameAttendee) :
 	
 
 <?php
-//loop through attendees
-foreach ($this->registers as $register) :
-	$text = '';
-	// is a plugin catching this ?
-	//TODO: remove markup..the plugin should handle this to improve flexibility
-	if ($res = $this->dispatcher->trigger('onAttendeeDisplay', array( $register->uid, &$text ))) :
-		echo '<li>'.$text.'</li>';
-	endif;
-	//if CB
-	if ($this->settings->get('event_comunsolution','0')==1) :
+// define variables before the foreach
+
+# Community Builder
+if ($this->settings->get('event_comunsolution','0')==1) {
+	global $_CB_framework, $mainframe, $ueConfig;
+
+	if (defined('JPATH_ADMINISTRATOR')) {
+		if (!file_exists( JPATH_ADMINISTRATOR.'/components/com_comprofiler/plugin.foundation.php')) {
+			// echo 'CB not installed!';
+		} else {
+			include_once(JPATH_ADMINISTRATOR.'/components/com_comprofiler/plugin.foundation.php' );
+		}
+	} else {
+		if (!file_exists($mainframe->getCfg('absolute_path').'/administrator/components/com_comprofiler/plugin.foundation.php')) {
+			// echo 'CB not installed!';
+		} else {
+			include_once($mainframe->getCfg( 'absolute_path' ).'/administrator/components/com_comprofiler/plugin.foundation.php');
+		}
+	}
+}
+
+
+# Kunena
+if ($this->settings->get('event_comunsolution','0')==2) {
+	$kconfig = $this->KunenaConfig;
 	
-		if ($this->settings->get('event_comunoption','0')==1) :
-			//User has avatar
-			if(!empty($register->avatar)) :
-				$avatarname = $register->avatar;
-				if (strpos($avatarname,'gallery/') !== false) {
-    				$useravatar = JHtml::image('components/com_comprofiler/images/'.$register->avatar,$register->name);
-				}
-				else
-				{
-					$useravatar = JHtml::image('images/comprofiler/'.'tn'.$register->avatar,$register->name);
-				}
+	if ($kconfig->get('username')) {
+		$name = 'username';
+	} else {
+		$name = 'name';
+	}
+	//$width = '60';
+	//$height = '60';
+	
+	if (!file_exists( JPATH_ADMINISTRATOR.'/components/com_kunena/api.php')) {
+		// echo 'Kunena not installed!';
+	} else {
+		include_once(JPATH_ADMINISTRATOR.'/components/com_kunena/api.php' );
+	}
+}
 
-				echo "<li><a href='".JRoute::_('index.php?option=com_comprofiler&task=userProfile&user='.$register->uid )."'>".$useravatar."<span class='username'>".$register->name."</span></a></li>";
+//  loop trough the registerdata
+foreach ($this->registers as $register) :
 
-			//User has no avatar
-			else :
-				   $nouseravatar = JHtml::image('components/com_comprofiler/images/english/tnnophoto.jpg',$register->name);
-				echo "<li><a href='".JRoute::_( 'index.php?option=com_comprofiler&task=userProfile&user='.$register->uid )."'>".$nouseravatar."<span class='username'>".$register->name."</span></a></li>";
-			endif;
-		endif;
+	# no communitycomponent is set so only show the name according to global setting
+	if ($this->settings->get('event_comunsolution','0')==0) {
+		$name = $this->settings->get('global_regname','1') ? 'name' : 'username';
+		echo "<li><span class='username'>".$register->$name."</span></li>";
+	}
 
-		//only show the username with link to profile
-		if ($this->settings->get('event_comunoption','0')==0) :
-			echo "<li><span class='username'><a href='".JRoute::_( 'index.php?option=com_comprofiler&amp;task=userProfile&amp;user='.$register->uid )."'>".$register->name." </a></span></li>";
-		endif;
+	# Community Builder
+	if ($this->settings->get('event_comunsolution','0')==1) :
+		$format = $ueConfig['name_format'];
+	
+		switch ($format) {
+			case 1 :
+				$name = $register->name;
+				break;
+			case 2 :
+				$name = $register->name." ".$register->username;	
+				break;
+			case 4 :
+				$name = $register->username." ".$register->name;
+				break;
+			case 3 :
+			default:
+				$name = $register->username;
+				break;
+			}
+	
+		# name with avatar + link
+		if ($this->settings->get('event_comunoption','0')==1) {
+			$cbUser = CBuser::getInstance($user->id);
+			if (!$cbUser) {
+				$cbUser = CBuser::getInstance(null);
+			}
+			$avatar = $cbUser->getField( 'avatar', null, 'html', 'none', 'list' );
+			echo "<li><a href='".JRoute::_('index.php?option=com_comprofiler&task=userProfile&user='.$register->uid )."'>".$avatar."<span class='username'>".$name."</span></a></li>";
+		}
 
-	//if CB end - if not CB than only name
+		# name with link
+		if ($this->settings->get('event_comunoption','0')==0) {
+			echo "<li><span class='username'><a href='".JRoute::_( 'index.php?option=com_comprofiler&amp;task=userProfile&amp;user='.$register->uid )."'>".$name." </a></span></li>";
+		}
 	endif;
 
-	//no communitycomponent is set so only show the username
-	if ($this->settings->get('event_comunsolution','0')==0) :
-		echo "<li><span class='username'>".$register->name."</span></li>";
-	endif;
-
+	# Kunena
+	if ($this->settings->get('event_comunsolution','0')==2) {
+		$user	= KunenaFactory::getUser(JFactory::getUser()->id);
+		$avatar = $user->getAvatarImage('', '', '');
+		
+		# name with avatar + link
+		if ($this->settings->get('event_comunoption','0')==1) {
+			echo "<li><a href='".JRoute::_('index.php?option=com_kunena&view=user&userid='.$register->uid )."'>".$avatar."<span class='username'>".$register->$name."</span></a></li>";
+		}
+		
+		# name with link
+		if ($this->settings->get('event_comunoption','0')==0) {
+			echo "<li><span class='username'><a href='".JRoute::_('index.php?option=com_kunena&view=user&userid='.$register->uid )."'>".$register->$name." </a></span></li>";
+		}
+	}
+	
 //end loop through attendees
 endforeach;
 ?>
@@ -140,12 +205,12 @@ endforeach;
 	
 </div></div>
 <?php endif; ?>
-
+<br>
 <div class="clearfix"></div>
 
 
-<div class="row-fluid">
-		<div class="span12">
+<div class="container-fluid">
+		<div class="row">
 		<?php
 if ($this->print == 0) {
 switch ($this->formhandler) {

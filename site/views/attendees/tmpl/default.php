@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -47,19 +47,19 @@ $detaillink = JRoute::_(JemHelperRoute::getEventRoute($this->event->id.':'.$this
 	</h1>
 	<?php endif; ?>
 
-	<div class="clearfix"></div>
+	
 <br>
 <div class="info_container">
 	
 	<?php if ($this->params->get('showintrotext')) : ?>
-	<div class="description no_space floattext">
+	<div class="description no_space clearfix">
 		<?php echo $this->params->get('introtext'); ?>
 	</div>
 	<?php endif; ?>
 
 	<h2><?php echo $this->escape($this->event->title); ?></h2>
 
-	<form action="<?php echo $this->action; ?>"  method="post" name="adminForm" id="adminForm">
+	<form action="<?php echo $this->action; ?>" method="post" name="adminForm" id="adminForm">
 		<table class="adminlist">
 			<tr>
 				<td width="80%">
@@ -73,7 +73,7 @@ $detaillink = JRoute::_(JemHelperRoute::getEventRoute($this->event->id.':'.$this
 		</table>
 		<br />
 
-		<div id="jem_filter" class="floattext">
+		<div id="jem_filter" class="clearfix">
 			<div>
 			<div class="pull-left">
 				<?php echo $this->lists['filter']; ?>
@@ -90,7 +90,6 @@ $detaillink = JRoute::_(JemHelperRoute::getEventRoute($this->event->id.':'.$this
 			?>
 			</div>
 			</div>
-			<div class="clearfix"></div>
 			<div>
 			
 			<br>

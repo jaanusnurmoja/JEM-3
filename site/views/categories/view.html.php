@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -25,6 +25,7 @@ class JemViewCategories extends JEMView
 
 		$document 		= JFactory::getDocument();
 		$jemsettings 	= JemHelper::config();
+		$vsettings		= JemHelper::viewSettings('vcategories');
 		$settings		= JemHelper::globalattribs();
 		$user			= JFactory::getUser();
 		$print			= $jinput->getBool('print');
@@ -45,10 +46,6 @@ class JemViewCategories extends JEMView
 			$document->setMetaData('robots', 'noindex, nofollow');
 		}
 		
-		# load JS
-		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_jem/dropdown.js', false, true);
-
 		//get menu information
 		$menu		= $app->getMenu();
 		$menuitem	= $menu->getActive();
@@ -110,6 +107,7 @@ class JemViewCategories extends JEMView
 		$this->pagination		= $pagination;
 		$this->item				= $menuitem;
 		$this->jemsettings		= $jemsettings;
+		$this->vsettings		= $vsettings;
 		$this->settings			= $settings;
 		$this->pagetitle		= $pagetitle;
 		$this->print_link		= $print_link;

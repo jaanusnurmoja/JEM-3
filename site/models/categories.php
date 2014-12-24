@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -97,10 +97,9 @@ class JemModelCategories extends JModelLegacy
 		$this->_showemptysubcats = (bool)$params->get('showemptychilds', 1);
 
 		//get the number of events from database
-		$limit		= $app->getUserStateFromRequest('com_jem.categories.'.$itemid.'.limit','limit',$params->get('cat_num'),'int');
-		$limitstart = $app->getUserStateFromRequest('com_jem.categories.'.$itemid.'.limitstart','limitstart',0,'int');
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
-
+		$limit		= $app->getUserStateFromRequest('com_jem.categories.'.$itemid.'.limit','limit',$params->get('cat_num'),'uint');
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
+		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
 	}
@@ -165,8 +164,9 @@ class JemModelCategories extends JModelLegacy
 				}
 			}
 		}
-
+		
 		return $this->_categories;
+
 	}
 
 	/**
@@ -241,7 +241,7 @@ class JemModelCategories extends JModelLegacy
 		// Second is to only select events assigned to category the user has access to
 		$where .= ' AND c.access IN (' . implode(',', $levels) . ')';
 
-		$query = 'SELECT DISTINCT a.id, a.dates, a.enddates, a.times, a.endtimes, a.title, a.locid, a.created, l.venue, l.city, l.state, l.url,'
+		$query = 'SELECT DISTINCT a.id, a.dates, a.enddates, a.times, a.endtimes, a.title, a.introtext, a.locid, a.created, l.venue, l.city, l.state, l.url,'
 			.' a.recurrence_type, a.recurrence_first_id,'
 			.' CASE WHEN CHAR_LENGTH(a.alias) THEN CONCAT_WS(\':\', a.id, a.alias) ELSE a.id END as slug,'
 			.' CASE WHEN CHAR_LENGTH(l.alias) THEN CONCAT_WS(\':\', a.locid, l.alias) ELSE a.locid END as venueslug'

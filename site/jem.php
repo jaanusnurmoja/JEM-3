@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -30,13 +30,13 @@ JLoader::registerNamespace('Recurr', JPATH_COMPONENT_SITE . '/classes');
 # Set the table directory
 JTable::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
 
-# perform cleanup if it wasn't done today (archive, delete, recurrence)
+# perform cleanup if it wasn't done today (archive, delete)
 JEMHelper::cleanup();
 
 # Get an instance of the controller
 $controller = JControllerLegacy::getInstance('Jem');
 
-# Perform the Request task
+# Perform task
 $input = JFactory::getApplication()->input;
 $controller->execute($input->getCmd('task'));
 

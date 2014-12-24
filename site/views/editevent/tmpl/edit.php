@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -9,10 +9,10 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.modal', 'a.flyermodal');
+JHtml::_('behavior.tabstate');
 
 // Create shortcut to parameters.
 $params		= $this->params;
@@ -21,29 +21,46 @@ $settings	= json_decode($this->item->attribs);
 
 <script type="text/javascript">
 	window.addEvent('domready', function(){
-	checkmaxplaces();
+		checkmaxplaces();
+
+		starter("<?php echo JText::_('COM_JEM_META_ERROR'); ?>",jQuery("#jform_meta_keywords").val(),jQuery("jform_meta_description").val());
+
+		jQuery('#jform_meta_keywords')
+			.focus(function() {
+				get_inputbox('jform_meta_keywords');
+			})
+			.blur(function() {
+				change_metatags;
+		});
+
+		jQuery('#jform_meta_description')
+			.focus(function() {
+				get_inputbox('jform_meta_description');
+			})
+			.blur(function() {
+				change_metatags;
+		});
 	});
 
-	function checkmaxplaces(){
-		var maxplaces = $('jform_maxplaces');
+	function checkmaxplaces()
+	{
 
-		if (maxplaces != null){
-			$('jform_maxplaces').addEvent('change', function(){
-				if ($('event-available')) {
-					var val = parseInt($('jform_maxplaces').value);
-					var booked = parseInt($('event-booked').value);
-					$('event-available').value = (val-booked);
-				}
-			});
+		jQuery("#jform_maxplaces").on("change", function() {
+			if (jQuery('#event-available')) {
+				var maxplaces = jQuery('#jform_maxplaces').val();
+				var booked = jQuery('#event-booked').val();
+				jQuery('#event-available').val(maxplaces-booked);
+			}
+		});
 
-			$('jform_maxplaces').addEvent('keyup', function(){
-				if ($('event-available')) {
-					var val = parseInt($('jform_maxplaces').value);
-					var booked = parseInt($('event-booked').value);
-					$('event-available').value = (val-booked);
-				}
-			});
-		}
+		jQuery("#event-booked").on("change", function() {
+			if (jQuery('#event-available')) {
+				var maxplaces = jQuery('#jform_maxplaces').val();
+				var booked = jQuery('#event-booked').val();
+				jQuery('#event-available').val(maxplaces-booked);
+			}
+		});
+
 	}
 </script>
 <script type="text/javascript">
@@ -60,7 +77,6 @@ $settings	= json_decode($this->item->attribs);
 <!-- container -->
 <div id="jem" class="jem_editevent<?php echo $this->pageclass_sfx; ?>">
 
-	<div class="span12">
 <!-- start form -->
 		<form enctype="multipart/form-data" action="<?php echo JRoute::_('index.php?option=com_jem&a_id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 			
@@ -91,33 +107,24 @@ $settings	= json_decode($this->item->attribs);
 			<div class="clearfix"></div>
 			
 			<?php if ($this->params->get('showintrotext')) : ?>
-			<div class="description no_space floattext">
+			<div class="description no_space clearfix">
 				<?php echo $this->params->get('introtext'); ?>
 			</div>
 			<?php endif; ?>
 			<p>&nbsp;</p>
 
-<!-- recurrence-message, above the tabs -->		
-			
-	<?php if ($this->item->recurrence_groupcheck) { ?>
-	<fieldset class="form-horizontal alert">
-		
-		<div class="description">
-		<div style="float:left;">
-			<?php echo JemOutput::recurrenceicon($this->item, false, false); ?>
-		</div>
-		<div class="floattext" style="margin-left:36px;">
-			<strong><?php echo JText::_('COM_JEM_EDITEVENT_WARN_RECURRENCE_TITLE'); ?></strong>
-			<br>
-			<?php
-				echo nl2br(JText::_('COM_JEM_EDITEVENT_WARN_RECURRENCE_TEXT'));
-			?>
-			<br><br>
-			<button class="btn" type="button" value="<?php echo JText::_('COM_JEM_EDITEVENT_RECURRENCE_REMOVEFROMSET');?>" onclick="Joomla.submitbutton('editevent.removefromset')"><?php echo JText::_('COM_JEM_EDITEVENT_RECURRENCE_REMOVEFROMSET');?></button>
-		</div>
-		</div>		
-	</fieldset>
-	<?php } ?>			
+
+	
+<!-- recurrence-message, above the tabs -->	
+<?php if ($this->item->recurrence_groupcheck) { ?>	
+<div class="form-horizontal">
+	<div>
+		<fieldset class="form-horizontal alert">
+			<p><?php echo nl2br(JText::_('COM_JEM_EVENT_WARN_RECURRENCE_TEXT')); ?></p>
+			<button class="btn" type="button" value="<?php echo JText::_('COM_JEM_EVENT_RECURRENCE_REMOVEFROMSET');?>" onclick="Joomla.submitbutton('editevent.removefromset')"><?php echo JText::_('COM_JEM_EVENT_RECURRENCE_REMOVEFROMSET');?></button>	
+		</fieldset>
+</div></div>
+<?php } ?>
 					
 <!-- TABS -->
 <?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'details')); ?>
@@ -164,7 +171,7 @@ $settings	= json_decode($this->item->attribs);
 			<!-- START META FIELDSET -->
 			<fieldset class="form-horizontal">
 				<legend><span class="legendcolor"><?php echo JText::_('COM_JEM_META_HANDLING'); ?></span></legend>
-					<div class="">
+					<p>
 						<input class="btn" type="button" onclick="insert_keyword('[title]')" value="<?php echo JText::_('COM_JEM_TITLE');	?>" />
 						<input class="btn" type="button" onclick="insert_keyword('[a_name]')" value="<?php	echo JText::_('COM_JEM_VENUE');?>" />
 						<input class="btn" type="button" onclick="insert_keyword('[categories]')" value="<?php	echo JText::_('COM_JEM_CATEGORIES');?>" />
@@ -172,43 +179,9 @@ $settings	= json_decode($this->item->attribs);
 						<input class="btn" type="button" onclick="insert_keyword('[times]')" value="<?php echo JText::_('COM_JEM_TIME');?>" />
 						<input class="btn" type="button" onclick="insert_keyword('[enddates]')" value="<?php echo JText::_('COM_JEM_ENDDATE');?>" />
 						<input class="btn" type="button" onclick="insert_keyword('[endtimes]')" value="<?php echo JText::_('COM_JEM_ENDTIME');?>" />
-						<br /><br />
-						<label for="meta_keywords">
-							<?php echo JText::_('COM_JEM_META_KEYWORDS').':';?>
-						</label>
-						
-						<?php
-						if (! empty ( $this->item->meta_keywords )) {
-							$meta_keywords = $this->item->meta_keywords;
-						} else {
-							$meta_keywords = $this->jemsettings->meta_keywords;
-						}
-						?>
-						<textarea class="inputbox" name="meta_keywords" id="meta_keywords" rows="5" cols="40" maxlength="150" onfocus="get_inputbox('meta_keywords')" onblur="change_metatags()"><?php echo $meta_keywords; ?></textarea>
-					</div>
-					<div class="">
-					<br />
-						<label for="meta_description">
-							<?php echo JText::_ ( 'COM_JEM_META_DESCRIPTION' ) . ':';?>
-						</label>
-						<?php
-						if (! empty ( $this->item->meta_description )) {
-							$meta_description = $this->item->meta_description;
-						} else {
-							$meta_description = $this->jemsettings->meta_description;
-						}
-						?>
-						<textarea class="inputbox" name="meta_description" id="meta_description" rows="5" cols="40" maxlength="200"	onfocus="get_inputbox('meta_description')" onblur="change_metatags()"><?php echo $meta_description;?></textarea>
-					</div>
-					<!-- include the metatags end-->
-				
-					<script type="text/javascript">
-					<!--
-						starter("<?php
-						echo JText::_ ( 'COM_JEM_META_ERROR' );
-						?>");	// window.onload is already in use, call the function manualy instead
-					-->
-					</script>
+					</p>
+					<?php echo $this->form->renderField('meta_keywords'); ?>
+					<?php echo $this->form->renderField('meta_description'); ?>
 			</fieldset>
 			<!--  END META FIELDSET -->
 
@@ -248,5 +221,4 @@ $settings	= json_decode($this->item->attribs);
 			<?php echo $this->form->renderField('timeout'); ?>
 			<?php echo JHtml::_('form.token'); ?>
 		</form>
-	</div>
 </div>

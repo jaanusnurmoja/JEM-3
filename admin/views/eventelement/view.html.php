@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -35,7 +35,7 @@ class JemViewEventelement extends JViewLegacy {
 		$search 			= $db->escape(trim(JString::strtolower($search)));
 
 		//prepare the document
-		$document->setTitle(JText::_('COM_JEM_SELECTEVENT'));
+		$document->setTitle(JText::_('COM_JEM_SELECT_EVENT'));
 		
 		// Load css
 		JHtml::_('stylesheet', 'com_jem/backend.css', array(), true);

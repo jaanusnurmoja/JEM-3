@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -25,7 +25,7 @@ defined('_JEXEC') or die;
 	<div class="clr"></div>
 
 	<?php if ($this->params->get('showintrotext')) : ?>
-	<div class="description no_space floattext">
+	<div class="description no_space clearfix">
 		<?php echo $this->params->get('introtext'); ?>
 	</div>
 	<?php endif; ?>

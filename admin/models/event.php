@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -358,12 +358,16 @@ class JemModelEvent extends JModelAdmin
 		if (empty($form)) {
 			return false;
 		}
+		
+		$jemsettings 	= JemHelper::config();
 	
-		if ($this->getState('event.id')) {
+		if ($this->getState('event.id')) { 
+			// existing event
+			
 			$pk = $this->getState('event.id');
-			$items = $this->getItem($pk);
-	
-			if ($items->recurrence_group) {
+			$item = $this->getItem($pk);
+			
+			if ($item->recurrence_group) {
 				# the event is part of a recurrence_group
 				#
 				# we can disable the dates if needed
@@ -371,7 +375,7 @@ class JemModelEvent extends JModelAdmin
 				/* $form->setFieldAttribute('enddates', 'disabled', 'true'); */
 			}
 			
-			if ($items->recurrence_groupcheck) {
+			if ($item->recurrence_groupcheck) {
 				# disable recurrence fields
 				$form->removeField('recurrence_count');
 				$form->removeField('recurrence_exdates');
@@ -380,6 +384,31 @@ class JemModelEvent extends JModelAdmin
 				$form->removeField('recurrence_until');
 				$form->removeField('recurrence_weekday');
 			}
+			
+			if (!empty ($item->meta_keywords )) {
+				$meta_keywords = $item->meta_keywords;
+			} else {
+				$meta_keywords = $jemsettings->meta_keywords;
+			}
+			
+			$form->setFieldAttribute('meta_keywords', 'default', $meta_keywords);
+			
+			if (!empty ($item->meta_description )) {
+				$meta_description = $item->meta_description;
+			} else {
+				$meta_description = $jemsettings->meta_description;
+			}
+				
+			$form->setFieldAttribute('meta_description', 'default', $meta_description);
+	
+		} else { 
+			// new event
+			
+			$meta_keywords = $jemsettings->meta_keywords;
+			$form->setFieldAttribute('meta_keywords', 'default', $meta_keywords);
+			
+			$meta_description = $jemsettings->meta_description;
+			$form->setFieldAttribute('meta_description', 'default', $meta_description);
 		}
 	
 		$settings = JemHelper::globalattribs();
@@ -443,10 +472,10 @@ class JemModelEvent extends JModelAdmin
 		$table->version ++;
 		
 		//get time-values from time selectlist and combine them accordingly
-		$starthours		= $jinput->get('starthours','','cmd');
-		$startminutes	= $jinput->get('startminutes','','cmd');
-		$endhours		= $jinput->get('endhours','','cmd');
-		$endminutes		= $jinput->get('endminutes','','cmd');
+		$starthours		= $jinput->getCmd('starthours');
+		$startminutes	= $jinput->getCmd('startminutes');
+		$endhours		= $jinput->getCmd('endhours');
+		$endminutes		= $jinput->getCmd('endminutes');
 		
 		// StartTime
 		if ($starthours != '' && $startminutes != '') {
@@ -498,14 +527,7 @@ class JemModelEvent extends JModelAdmin
 			$backend = false;
 
 		$cats 						= $data['cats'];
-		$metakeywords 				= $jinput->get('meta_keywords');
-		$metadescription 			= $jinput->get('meta_description');
-		$author_ip 					= $jinput->get('author_ip');
-		
-		$data['meta_keywords'] 		= $metakeywords;
-		$data['meta_description']	= $metadescription;
-		$data['author_ip']			= $author_ip;
-		
+		$data['author_ip']			= $jinput->getString('author_ip');
 		
 		## Recurrence - check option ##
 		

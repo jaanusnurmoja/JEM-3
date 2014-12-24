@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -48,13 +48,12 @@ class JemModelMyevents extends JModelLegacy
 		$jinput 	 = JFactory::getApplication()->input;
 		$itemid		 = $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
 
-		//get the number of events from database
-		$limit		= $app->getUserStateFromRequest('com_jem.myevents.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'int');
-		$limitstart = $app->getUserStateFromRequest('com_jem.myevents.'.$itemid.'.limitstart', 'limitstart', 0, 'int');
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
-
+		$limit		= $app->getUserStateFromRequest('com_jem.myeventst.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'uint');
 		$this->setState('limit', $limit);
+		
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
 		$this->setState('limitstart', $limitstart);
+		
 	}
 
 	/**
@@ -176,7 +175,7 @@ class JemModelMyevents extends JModelLegacy
 		$orderby = $this->_buildOrderBy();
 
 		//Get Events from Database
-		$query = 'SELECT DISTINCT a.id as eventid, a.id, a.dates, a.enddates, a.published, a.times, a.endtimes, a.title, a.created, a.locid,a.registra, a.maxplaces, a.waitinglist,'
+		$query = 'SELECT DISTINCT a.id as eventid, a.id, a.introtext, a.dates, a.enddates, a.published, a.times, a.endtimes, a.title, a.created, a.locid,a.registra, a.maxplaces, a.waitinglist,'
 				. ' a.recurrence_type, a.recurrence_first_id,'
 				. ' l.venue, l.city, l.state, l.url,'
 				. ' c.catname, c.id AS catid,'

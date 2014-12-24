@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -47,10 +47,6 @@ class JemViewAttendees extends JViewLegacy {
 		JemHelper::loadCss('jem');
 		JemHelper::loadCustomTag();
 
-		# load JS-files
-		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_jem/dropdown.js', false, true);
-		
 		# get userState
 		$filter_order		= $app->getUserStateFromRequest('com_jem.attendees.'.$itemid.'.filter_order','filter_order','u.username','cmd');
 		$filter_order_Dir	= $app->getUserStateFromRequest('com_jem.attendees.'.$itemid.'.filter_order_Dir','filter_order_Dir','','word');

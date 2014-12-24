@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -188,6 +188,8 @@ class JemImage {
 				$savefolder = JPATH_SITE.'/'.$dirname.'/small/';
 				if (!JFolder::exists($savefolder)) {
 					JFolder::create($savefolder);
+					$file_content = '<!DOCTYPE html><title></title>';
+					JFile::write($savefolder.'/index.html', $file_content);
 				}
 
 				JemImage::thumb($filepath, $save, $settings->imagewidth, $settings->imagehight);

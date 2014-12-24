@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -23,7 +23,7 @@ endif;
 defined('_JEXEC') or die;
 ?>
 <fieldset class="form-horizontal">
-	<legend><?php echo JText::_('COM_JEM_EVENTS'); ?></legend>
+	<legend><?php echo JText::_('COM_JEM_EVENT'); ?></legend>
 		
 			<?php foreach ($this->form->getFieldset('evevents') as $field): ?>
 			<div class="control-group">

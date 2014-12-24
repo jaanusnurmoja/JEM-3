@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -32,11 +32,10 @@ class JemModelMyattendances extends JemModelEventslist
 		$itemid 			= $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
 		
 		# limit/start
-		$limit		= $app->getUserStateFromRequest('com_jem.myattendances.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'int');
+		$limit		= $app->getUserStateFromRequest('com_jem.myattendances.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'uint');
 		$this->setState('list.limit', $limit);
 		
-		$limitstart = $app->getUserStateFromRequest('com_jem.myattendances.'.$itemid.'.limitstart', 'limitstart', 0, 'int');
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
 		$this->setState('list.start', $limitstart);
 		
 		# Search

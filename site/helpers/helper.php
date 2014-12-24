@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -17,6 +17,35 @@ use Recurr\RecurrenceRuleTransformer;
  */
 class JemHelper {
 
+
+	/**
+	 * Pulls settings from database and stores in an static object
+	 *
+	 * @return object
+	 */
+	static function viewSettings($view)
+	{
+		static $settings;
+	
+		if (!is_object($settings)) {
+			$db = JFactory::getDBO();
+			$query = $db->getQuery(true);
+	
+			$query->select($view);
+			$query->from('#__jem_settings');
+			$query->where('id = 1');
+	
+			$db->setQuery($query);
+			$settings = $db->loadResult();		
+		}
+	
+		$vregistry = new JRegistry;
+		$vregistry->loadString($settings);
+	
+		return $vregistry;
+	}
+	
+	
 	/**
 	 * Pulls settings from database and stores in an static object
 	 * @return object
@@ -105,6 +134,16 @@ class JemHelper {
 	 */
 	static function cleanup($forced = 0)
 	{
+		
+		# run only once (component/modules), non-forced
+		if (!$forced) {
+			static $counter = 0;
+			if ( $counter>0 ) {
+				return;
+			}
+			$counter++;
+		}
+		
 		$jemsettings	= JemHelper::config();
 
 		$now = time();
@@ -123,7 +162,7 @@ class JemHelper {
 				$query = $db->getQuery(true);
 				$query->update('#__jem_events');
 				$query->set('published = -2');
-				$query->where(array("dates > 0","DATE_SUB(NOW(), INTERVAL '.$jemsettings->minus.' DAY) > (IF (enddates IS NOT NULL, enddates, dates))","published=1"));
+				$query->where(array("dates > 0","DATE_SUB(NOW(), INTERVAL ".$jemsettings->minus." DAY) > (IF (enddates IS NOT NULL, enddates, dates))","published=1"));
 				$db->SetQuery($query);
 				$db->execute();
 			}
@@ -133,7 +172,7 @@ class JemHelper {
 				$query = $db->getQuery(true);
 				$query->update('#__jem_events');
 				$query->set('published = 2');
-				$query->where(array("dates > 0","DATE_SUB(NOW(), INTERVAL '.$jemsettings->minus.' DAY) > (IF (enddates IS NOT NULL, enddates, dates))","published=1"));
+				$query->where(array("dates > 0","DATE_SUB(NOW(), INTERVAL ".$jemsettings->minus." DAY) > (IF (enddates IS NOT NULL, enddates, dates))","published=1"));
 				$db->SetQuery($query);
 				$db->execute();
 			}
@@ -492,11 +531,10 @@ class JemHelper {
 	 * Creates a tooltip
 	 */
 	static function caltooltip($tooltip, $title = '', $text = '', $href = '', $class = '', $time = '', $color = '') {
-		$tooltip = (htmlspecialchars($tooltip));
-		$title = (htmlspecialchars($title));
-
-		$titleTip = JHtml::tooltipText($title, $tooltip, 0);
-		
+		$tooltip = $tooltip;
+		$title = $title;
+		$titleTip = JHtml::tooltipText($title, $tooltip, true,true);
+				
 		if ($href) {
 			$href = JRoute::_ ($href);
 			$tip = '<div class="'.$class.'" title="'.$titleTip.'"><a href="'.$href.'">'.$time.$text.'</a></div>';
@@ -738,7 +776,7 @@ class JemHelper {
 	 * $type = compononent(1), plugin(2)
 	 * $name = name to search in column name
 	 */
-	static function getParam($column,$setting,$type,$name) {
+	static function getParam($column,$setting,$type,$name,$prefix = false) {
 
 		switch($column) {
 			case 1:
@@ -764,12 +802,16 @@ class JemHelper {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select(array($column));
-		$query->from('#__extensions');
+		if ($prefix) {
+			$query->from($prefix.'extensions');
+		} else {
+			$query->from('#__extensions');
+		}
 		$query->where(array('name = '.$db->quote($name),'type = '.$db->quote($type)));
 		$db->setQuery($query);
 
 		$manifest = json_decode($db->loadResult(), true);
-		$result = $manifest[ $setting ];
+		$result = $manifest[$setting];
 
 		if (empty($result)) {
 			$result = 'N/A';
@@ -984,26 +1026,7 @@ class JemHelper {
 		$minutes1 	= $jdate1->format('i');
 		$seconds1 	= $jdate1->format('s');
 
-		$limit_date2 = $year1.$month1.$day1.'T'.$hour1.$minutes1.$seconds1.'Z';
-
-		
-		/*
-		# check for FREQ: BYDAY
-		if ($freq == 'BYDAY') {
-			if ($recurrence_interval == '5'){
-				# last
-				$rrule = 'FREQ=MONTHLY;UNTIL='.$limit_date2.';BYDAY='.$recurrence_weekday.';BYSETPOS=-1';
-			} else if (recurrence_interval == '6'){
-				# before last
-				$rrule = 'FREQ=MONTHLY;UNTIL='.$limit_date2.';BYDAY='.$recurrence_weekday.';BYSETPOS=-2';
-			} else if (recurrence_interval){
-				$rrule = 'FREQ=DAILY;INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2.';BYDAY='.$recurrence_weekday;
-			}
-		} else {
-				$rrule = 'FREQ='.$freq.';INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2;
-		}
-		*/
-		
+		$limit_date2 = $year1.$month1.$day1.'T235959Z';
 		
 		# Define FREQ
 		switch($recurrence_freq) {
@@ -1019,27 +1042,17 @@ class JemHelper {
 			case "4":
 				$freq = 'YEARLY';
 				break;
-			case "5":
-				$freq = 'WEEKDAY';
-				break;
 			default:
 				$freq = '';
 		}		
 		
 		
-		if ($recurrence_freq == 5) {
-			# we're in the weekly freq
-			
-			# let's check if the user did select a weekday
-			if ($recurrence_weekday) {
-				$rrule = 'FREQ='.$freq.';INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2.';BYDAY='.$recurrence_weekday;
-			} else {
-				$rrule = 'FREQ='.$freq.';INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2;
-			}
+		# let's check if the user did select a weekday
+		if ($recurrence_weekday) {
+			$rrule = 'FREQ='.$freq.';INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2.';BYDAY='.$recurrence_weekday;
 		} else {
 			$rrule = 'FREQ='.$freq.';INTERVAL='.$recurrence_interval.';UNTIL='.$limit_date2;
 		}
-		
 		
 		# Get new dates
 		$timezone    = JemHelper::getTimeZoneName();

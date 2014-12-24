@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -14,9 +14,9 @@ defined('_JEXEC') or die;
 <form action="<?php echo $this->action; ?>" method="post" id="adminForm" name="adminForm">
 
 <?php if ($this->settings->get('global_show_filter',1) || $this->settings->get('global_display',1)) : ?>
-<div id="jem_filter" class="floattext">
+<div id="jem_filter" class="clearfix">
 	<?php if ($this->settings->get('global_show_filter',1)) : ?>
-	<div class="jem_fleft">
+	<div class="pull-left">
 		<?php
 		echo $this->lists['filter'].'&nbsp;';
 		?>
@@ -28,7 +28,7 @@ defined('_JEXEC') or die;
 	</div>
 	<?php endif; ?>
 	<?php if ($this->settings->get('global_display',1)) : ?>
-	<div class="jem_fright">
+	<div class="pull-right">
 		<?php
 			echo $this->pagination->getLimitBox();
 		?>
@@ -57,37 +57,51 @@ defined('_JEXEC') or die;
 
 	<thead>
 		<tr>
-			<th id="jem_date" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_DATE', 'a.dates', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th id="jem_date" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_DATE', 'a.dates', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php if ($this->jemsettings->showtitle == 1) : ?>
-			<th id="jem_title" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_TITLE', 'a.title', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th id="jem_title" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_TITLE', 'a.title', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showlocate == 1) : ?>
-			<th id="jem_location" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_LOCATION', 'l.venue', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th id="jem_location" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_LOCATION', 'l.venue', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showcity == 1) : ?>
-			<th id="jem_city" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CITY', 'l.city', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th id="jem_city" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CITY', 'l.city', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showcat == 1) : ?>
-			<th id="jem_category" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CATEGORY', 'c.catname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+			<th id="jem_category" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CATEGORY', 'c.catname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 		</tr>
 	</thead>
 	<tbody>
 	<?php if ($this->noevents == 1) : ?>
-			<tr align="center"><td colspan="20"><?php echo JText::_('COM_JEM_NO_EVENTS'); ?></td></tr>
+			<tr class="noevents"><td colspan="20"><?php echo JText::_('COM_JEM_NO_EVENTS'); ?></td></tr>
 		<?php else : ?>
 			<?php $this->rows = $this->getRows(); ?>
 			<?php foreach ($this->rows as $row) : ?>
 			<tr class="sectiontableentry<?php echo ($row->odd +1) . $this->params->get('pageclass_sfx'); ?>"
 				itemscope="itemscope" itemtype="http://schema.org/Event">
 
-				<td class="jem_date" align="left">
+				<td class="jem_date">
 					<?php echo JEMOutput::formatShortDateTime($row->dates, $row->times,
 						$row->enddates, $row->endtimes); ?>
 				</td>
+				
+				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 2)) : ?>
+				<?php if ($this->escape($row->introtext) != "" ) { ?>
+					<td class="jem_title">
+						<a href="<?php echo JRoute::_(JemHelperRoute::getEventRoute($row->slug)); ?>" itemprop="url">
+							<span itemprop="name"><?php echo $this->escape($row->title); ?></span>
+						</a>
+					</td>
+				<?php } else { ?>
+				<td class="jem_title" itemprop="name">
+						<?php echo $this->escape($row->title); ?>
+					</td>
+				<?php } ?>
+				<?php endif; ?>
 
 				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 1)) : ?>
-					<td class="jem_title" align="left" valign="top">
+					<td class="jem_title">
 						<a href="<?php echo JRoute::_(JEMHelperRoute::getEventRoute($row->slug)); ?>">
 							<?php echo $this->escape($row->title); ?>
 						</a>
@@ -95,13 +109,13 @@ defined('_JEXEC') or die;
 				<?php endif; ?>
 
 				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 0)) : ?>
-					<td class="jem_title" align="left" valign="top">
+					<td class="jem_title">
 						<?php echo $this->escape($row->title); ?>
 					</td>
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showlocate == 1) : ?>
-					<td class="jem_location" align="left" valign="top">
+					<td class="jem_location">
 						<?php if ($this->jemsettings->showlinkvenue == 1) : ?>
 							<?php echo $row->locid != 0 ? "<a href='".JRoute::_(JEMHelperRoute::getVenueRoute($row->venueslug))."'>".$this->escape($row->venue)."</a>" : '-'; ?>
 						<?php else : ?>
@@ -111,12 +125,12 @@ defined('_JEXEC') or die;
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showcity == 1) : ?>
-					<td class="jem_city" align="left" valign="top"><?php echo $row->city ? $this->escape($row->city) : '-'; ?></td>
+					<td class="jem_city"><?php echo $row->city ? $this->escape($row->city) : '-'; ?></td>
 				<?php endif; ?>
 
 
 				<?php if ($this->jemsettings->showcat == 1) : ?>
-					<td class="jem_category" align="left" valign="top">
+					<td class="jem_category">
 					<?php echo implode(", ",
 							JEMOutput::getCategoryList($row->categories, $this->jemsettings->catlinklist)); ?>
 					</td>

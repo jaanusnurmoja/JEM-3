@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -10,7 +10,6 @@ defined('_JEXEC') or die;
 
 JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
 
@@ -96,6 +95,7 @@ $settings	= $this->settings;
 		<tbody id="search_in_here">
 			<?php
 			foreach ($this->items as $i => $row) :
+	
 				//Prepare date
 				$displaydate = JemOutput::formatLongDateTime($row->dates, null, $row->enddates, null);
 				// Insert a break between date and enddate if possible

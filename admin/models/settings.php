@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -60,6 +60,31 @@ class JEMModelSettings extends JModelForm
 		$registryCss = new JRegistry;
 		$registryCss->loadString($data->css);
 		$data->css = $registryCss->toArray();
+		
+		// Convert vvenue settings to an array
+		$vvenue = new JRegistry;
+		$vvenue->loadString($data->vvenue);
+		$data->vvenue = $vvenue->toArray();
+		
+		// Convert vvenues settings to an array
+		$vvenues = new JRegistry;
+		$vvenues->loadString($data->vvenues);
+		$data->vvenues = $vvenues->toArray();
+		
+		# Convert vcategories settings to an array
+		$vvenues = new JRegistry;
+		$vvenues->loadString($data->vcategories);
+		$data->vcategories = $vvenues->toArray();
+		
+		# Convert vcategory settings to an array
+		$vvenues = new JRegistry;
+		$vvenues->loadString($data->vcategory);
+		$data->vcategory = $vvenues->toArray();
+		
+		# Convert vcategory settings to an array
+		$vcalendar = new JRegistry;
+		$vcalendar->loadString($data->vcalendar);
+		$data->vcalendar = $vcalendar->toArray();
 
 		return $data;
 	}
@@ -170,10 +195,25 @@ class JEMModelSettings extends JModelForm
 				$gd_version .= ' (' . trim($gd_sup[1]) . ')';
 			}
 		}
-
+		
+		// language conflict detection
+		
+		$language = null;
+		# retrieve loaded language files
+		
+		$language = JFactory::getLanguage();
+		
+		$paths = count($language->getPaths('com_jem'));
+	
 		$config 					= new stdClass();
 		$config->vs_component		= JemHelper::getParam(1,'version',1,'com_jem');
+		$config->vs_plg_comments	= JemHelper::getParam(1,'version',2,'plg_jem_comments');
+		$config->vs_plg_content		= JemHelper::getParam(1,'version',2,'plg_content_jem');
 		$config->vs_plg_mailer		= JemHelper::getParam(1,'version',2,'plg_jem_mailer');
+		$config->vs_plg_search		= JemHelper::getParam(1,'version',2,'plg_search_jem');
+		$config->vs_plg_finder		= JemHelper::getParam(1,'version',2,'plg_finder_jem');
+		$config->vs_plg_xtdevent	= JemHelper::getParam(1,'version',2,'plg_editors_xtd_event');
+		$config->vs_plg_quickicon	= JemHelper::getParam(1,'version',2,'plg_quickicon_jemquickicon');
 		$config->vs_mod_jem_cal		= JemHelper::getParam(1,'version',3,'mod_jem_cal');
 		$config->vs_mod_jem			= JemHelper::getParam(1,'version',3,'mod_jem');
 		$config->vs_mod_jem_wide	= JemHelper::getParam(1,'version',3,'mod_jem_wide');
@@ -181,6 +221,7 @@ class JEMModelSettings extends JModelForm
 		$config->vs_php				= phpversion();
 		$config->vs_php_magicquotes	= $quote;
 		$config->vs_gd				= $gd_version;
+		$config->vs_lng_paths		= $paths;
 
 		return $config;
 	}

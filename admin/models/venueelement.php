@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -122,7 +122,7 @@ class JemModelVenueelement extends JModelLegacy
 		
 		$query->where($where);
 
-		$orderby 	= array($filter_order.' '.$filter_order_Dir,'l.ordering ASC');
+		$orderby 	= array($filter_order.' '.$filter_order_Dir,'l.venue ASC');
 		$query->order($orderby);
 		
 		return $query;		

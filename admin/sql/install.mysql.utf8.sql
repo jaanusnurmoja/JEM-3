@@ -49,13 +49,16 @@ CREATE TABLE IF NOT EXISTS `#__jem_events` (
   `metadata` text NOT NULL,
   `featured` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `attribs` varchar(5120) NOT NULL,
-  `language` char(7) NOT NULL,
+  `language` char(7) NOT NULL DEFAULT '*',
   `recurrence_group` varchar(20) NOT NULL,
   `recurrence_until` varchar(20) NOT NULL,
   `recurrence_freq` varchar(20) NOT NULL,
   `wholeday` varchar(2) NOT NULL,
   `recurrence_count` int(11) NOT NULL,
   `recurrence_weekday` varchar(100) NOT NULL,
+  `startDateTime` varchar(100) NOT NULL,
+  `endDateTime` varchar(100) NOT NULL,
+  `note` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
 
@@ -272,7 +275,6 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `id` int(11) unsigned NOT NULL,
   `oldevent` tinyint(4) NOT NULL,
   `minus` tinyint(4) NOT NULL,
-  `showtime` tinyint(4) NOT NULL,
   `showtitle` tinyint(4) NOT NULL,
   `showlocate` tinyint(4) NOT NULL,
   `showcity` tinyint(4) NOT NULL,
@@ -287,15 +289,8 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `formattime` varchar(100) NOT NULL,
   `timename` varchar(50) NOT NULL,
   `showdetails` tinyint(4) NOT NULL,
-  `showtimedetails` tinyint(4) NOT NULL,
-  `showevdescription` tinyint(4) NOT NULL,
-  `showdetailstitle` tinyint(4) NOT NULL,
-  `showdetailsadress` tinyint(4) NOT NULL,
-  `showlocdescription` tinyint(4) NOT NULL,
   `showlinkvenue` tinyint(4) NOT NULL,
-  `showdetlinkvenue` tinyint(4) NOT NULL,
   `delivereventsyes` tinyint(4) NOT NULL,
-  `datdesclimit` varchar(15) NOT NULL,
   `autopubl` tinyint(4) NOT NULL,
   `deliverlocsyes` tinyint(4) NOT NULL,
   `autopublocate` tinyint(4) NOT NULL,
@@ -310,8 +305,6 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `imagewidth` varchar(20) NOT NULL,
   `gddisabled` tinyint(4) NOT NULL,
   `imageenabled` tinyint(4) NOT NULL,
-  `comunsolution` tinyint(4) NOT NULL,
-  `comunoption` tinyint(4) NOT NULL,
   `catlinklist` tinyint(4) NOT NULL,
   `showfroregistra` tinyint(4) NOT NULL,
   `showfrounregistra` tinyint(4) NOT NULL,
@@ -324,7 +317,6 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `lightbox` tinyint(4) NOT NULL,
   `meta_keywords` varchar(255) NOT NULL,
   `meta_description` varchar(255) NOT NULL,
-  `showstate` tinyint(4) NOT NULL,
   `showeventimage` tinyint(4) NOT NULL,
   `statewidth` varchar(20) NOT NULL,
   `regname` tinyint(4) NOT NULL,
@@ -332,21 +324,11 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `lastupdate` varchar(20) NOT NULL DEFAULT '',
   `checked_out` int(11) NOT NULL DEFAULT '0',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `tld` varchar(20) NOT NULL,
-  `lg` varchar(20) NOT NULL,
   `tableeventimagewidth` varchar(20) NOT NULL,
   `display_num` tinyint(4) NOT NULL,
   `cat_num` tinyint(4) NOT NULL,
-  `filter` tinyint(4) NOT NULL,
-  `discatheader` tinyint(4) NOT NULL,
-  `display` tinyint(4) NOT NULL,
-  `icons` tinyint(4) NOT NULL,
-  `show_print_icon` tinyint(4) NOT NULL,
-  `show_email_icon` tinyint(4) NOT NULL,
-  `events_ical` tinyint(4) NOT NULL,
   `showatte` int(11) NOT NULL,
   `attewidth` varchar(10) NOT NULL,
-  `show_archive_icon` tinyint(4) NOT NULL,
   `weekdaystart` int(11) NOT NULL DEFAULT '0',
   `attachments_path` varchar(100) NOT NULL DEFAULT 'media/com_jem/attachments',
   `attachments_maxsize` varchar(15) NOT NULL DEFAULT '1000',
@@ -358,7 +340,13 @@ CREATE TABLE IF NOT EXISTS `#__jem_settings` (
   `defaultCountry` varchar(10) NOT NULL,
   `globalattribs` varchar(5120) NOT NULL,
   `css` varchar (5120) NOT NULL DEFAULT '',
-  `version` varchar (20) NOT NULL DEFAULT '3.0.1',
+  `version` varchar (20) NOT NULL DEFAULT '3.0.5',
+  `vevent` text NOT NULL DEFAULT '',
+  `vvenue` text NOT NULL DEFAULT '',
+  `vvenues` text NOT NULL DEFAULT '',
+  `vcategories` text NOT NULL DEFAULT '',
+  `vcategory` text NOT NULL DEFAULT '',
+  `vcalendar` text NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE `utf8_general_ci`;
 
@@ -388,15 +376,9 @@ CREATE TABLE IF NOT EXISTS `#__jem_countries` (
   KEY `iso2` (`iso2`)
 ) ENGINE=MyISAM CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
 
-INSERT IGNORE INTO #__jem_settings VALUES
-(1, 2, 1, 1, 1, 1, 1, 1, '100%', '20%', '40%', '20%', '', 
-'D, j. F Y', 'd.m.y', '%H.%M', 'h', 1, 1, 1, 1, 1, 1, 1, 1, -2, '1000', -2, -2, -2, 1, '',
-1, 1, 1, 1, '100', '100', '100', 1, 1, 0, 0, 1, 2, 2, -2, 1, 0, -2, 1, 0, 1, 
-'[title], [a_name], [categories], [times]', 'The event titled [title] starts on [dates]!',
-1, 0, '0', 0, 0, '1364604520', '', '', 'COM', 'US', '10%', '10',
-0, 1, 1, 1, 1, 1, 1, 1, 0, '10%', 1, 1, 'media/com_jem/attachments', '1000',
-'txt,csv,htm,html,xml,css,doc,xls,zip,rtf,ppt,pdf,swf,flv,avi,wmv,mov,jpg,jpeg,gif,png,tar.gz',
-0, '60', 100, 1, '', '','','3.0.3');
+INSERT INTO `#__jem_settings` (`id`, `oldevent`, `minus`, `showtitle`, `showlocate`, `showcity`, `showmapserv`, `tablewidth`, `datewidth`, `titlewidth`, `locationwidth`, `citywidth`, `formatdate`, `formatShortDate`, `formattime`, `timename`, `showdetails`, `showlinkvenue`, `delivereventsyes`, `autopubl`, `deliverlocsyes`, `autopublocate`, `showcat`, `catfrowidth`, `evdelrec`, `evpubrec`, `locdelrec`, `locpubrec`, `sizelimit`, `imagehight`, `imagewidth`, `gddisabled`, `imageenabled`, `catlinklist`, `showfroregistra`, `showfrounregistra`, `eventedit`, `eventeditrec`, `eventowner`, `venueedit`, `venueeditrec`, `venueowner`, `lightbox`, `meta_keywords`, `meta_description`, `showeventimage`, `statewidth`, `regname`, `storeip`, `lastupdate`, `checked_out`, `checked_out_time`, `tableeventimagewidth`, `display_num`, `cat_num`, `showatte`, `attewidth`, `weekdaystart`, `attachments_path`, `attachments_maxsize`, `attachments_types`, `ownedvenuesonly`, `recurrence_anticipation`, `ical_max_items`, `empty_cat`, `defaultCountry`, `globalattribs`, `css`, `vevent`, `vvenue`, `vvenues`, `vcategories`, `vcategory`) VALUES
+(1, 2, 1, 1, 1, 1, 1, '100%', '20%', '40%', '20%', '', 'D, j. F Y', 'd.m.y', '%H.%M', 'h', 1, 1, -2, -2, -2, -2, 1, '', 1, 1, 1, 1, '100', '100', '100', 1, 1, 1, 2, 2, -2, 1, 0, -2, 1, 0, 1, '[title], [a_name], [times]', 'The event titled [title] starts on [dates]!', 0, '0', 0, 0, '1411731117', 0, '0000-00-00 00:00:00', '10%', 10, 0, 0, '10%', 1, 'media/com_jem/attachments', '1000', 'txt,csv,htm,html,xml,css,doc,xls,zip,rtf,ppt,pdf,swf,flv,avi,wmv,mov,jpg,jpeg,gif,png,tar.gz', 0, '60', 100, 1, '0', '', '', '', '', '', '', '');
+
 
 INSERT IGNORE INTO `#__jem_countries` (`id`, `continent`, `iso2`, `iso3`, `un`, `name`) VALUES
 (1, 'AS', 'AF', 'AFG', 4, 'Afghanistan, Islamic Republic of'),

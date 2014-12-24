@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -49,14 +49,12 @@ class JemModelSearch extends JModelLegacy
 		$itemid			= $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
 
 		//get the number of events from database
-		$limit		= $app->getUserStateFromRequest('com_jem.search.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'int');
-		$limitstart = $app->getUserStateFromRequest('com_jem.search.'.$itemid.'.limitstart', 'limitstart', 0, 'int');
-		$limitstart	= $jinput->getInt('limitstart', 0);
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
-
+		$limit		= $app->getUserStateFromRequest('com_jem.search.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'uint');
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
+		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
-
+		
 		// Get the filter request variables
 		$filter_order = $jinput->getCmd('filter_order', 'a.dates');
 		$this->setState('filter_order', $filter_order);
@@ -139,7 +137,7 @@ class JemModelSearch extends JModelLegacy
 			$orderby	= $this->_buildOrderBy();
 
 			//Get Events from Database
-			$this->_query = 'SELECT a.id, a.dates, a.enddates, a.times, a.endtimes, a.title, a.created, a.locid,'
+			$this->_query = 'SELECT a.id, a.dates, a.enddates, a.introtext, a.times, a.endtimes, a.title, a.created, a.locid,'
 					. ' a.recurrence_type, a.recurrence_first_id,'
 					. ' l.venue, l.city, l.state, l.url,'
 					. ' CASE WHEN CHAR_LENGTH(a.alias) THEN CONCAT_WS(\':\', a.id, a.alias) ELSE a.id END as slug,'

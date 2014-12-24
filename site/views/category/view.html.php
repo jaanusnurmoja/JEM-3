@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -34,6 +34,7 @@ class JemViewCategory extends JEMView
 			$app 			= JFactory::getApplication();
 			$jinput 		= JFactory::getApplication()->input;
 			$document 		= JFactory::getDocument();
+			$vsettings		= JemHelper::viewSettings('vcategory');
 			$jemsettings 	= JemHelper::config();
 			$settings 		= JemHelper::globalattribs();
 			$db  			= JFactory::getDBO();
@@ -51,11 +52,7 @@ class JemViewCategory extends JEMView
 			JemHelper::loadCss('jem');
 			JemHelper::loadCustomCss();
 			JemHelper::loadCustomTag();
-			
-			# load JS
-			JHtml::_('bootstrap.framework');
-			JHtml::_('script', 'com_jem/dropdown.js', false, true);
-
+						
 			//get data from model
 			$state		= $this->get('State');
 			$params		= $state->params;
@@ -109,12 +106,6 @@ class JemViewCategory extends JEMView
 			}
 			if ($jemsettings->showcity == 1) {
 				$filters[] = JHtml::_('select.option', '3', JText::_('COM_JEM_CITY'));
-			}
-			if ($jemsettings->showcat == 1) {
-				$filters[] = JHtml::_('select.option', '4', JText::_('COM_JEM_CATEGORY'));
-			}
-			if ($jemsettings->showstate == 1) {
-				$filters[] = JHtml::_('select.option', '5', JText::_('COM_JEM_STATE'));
 			}
 			$lists['filter'] = JHtml::_('select.genericlist', $filters, 'filter_type', array('size'=>'1','class'=>'inputbox input-medium'), 'value', 'text', $filter_type);
 
@@ -232,6 +223,7 @@ class JemViewCategory extends JEMView
 			$this->description		= $description;
 			$this->pagination		= $pagination;
 			$this->jemsettings		= $jemsettings;
+			$this->vsettings		= $vsettings;
 			$this->settings			= $settings;
 			$this->pageclass_sfx	= htmlspecialchars($pageclass_sfx);
 			$this->maxLevel			= $params->get('maxLevel', -1);

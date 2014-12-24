@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -19,17 +19,15 @@ defined('_JEXEC') or die;
 	if ($this->print) { 
 		echo JemOutput::printbutton($this->print_link, $this->params);
 	} else {
-		if ($this->settings->get('show_dropwdownbutton',1)) {
 	?>
-	
-	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> <span class="icon-cog"></span> <span class="caret"></span> </a>
-			<ul class="dropdown-menu">
-				<li><?php echo JemOutput::submitbutton($this->dellink, $this->params);?></li>
-				<li><?php echo JemOutput::archivebutton($this->params, $this->task, $this->id);?></li>
-				<li><?php echo JemOutput::printbutton($this->print_link, $this->params);?></li>
-			</ul>
-			
-			<?php }} ?>
+	<div class="button_flyer icons">
+		<?php
+			echo JemOutput::submitbutton($this->dellink, $this->params);
+			echo JemOutput::archivebutton($this->params, $this->task, $this->id);
+			echo JemOutput::printbutton($this->print_link, $this->params);
+		?>
+	</div>
+			<?php } ?>
 		</div>
 	
 	<?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -47,8 +45,8 @@ defined('_JEXEC') or die;
 			<?php echo JHtml::_('link', JRoute::_($row->linktarget), $this->escape($row->catname)); ?>
 		</h2>
 
-		<div class="floattext">
-			<?php if ($this->jemsettings->discatheader) { ?>
+		<div class="clearfix">
+			<?php if ($this->vsettings->get('show_category_image','1')) { ?>
 				<div class="image imagetop">
 					<?php // flyer
 						if (empty($row->image)) {

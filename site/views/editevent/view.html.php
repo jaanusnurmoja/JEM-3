@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -33,16 +33,17 @@ class JemViewEditevent extends JViewLegacy
 
 		// Initialise variables.
 		$jemsettings = JEMHelper::config();
-		$app 	= JFactory::getApplication();
-		$user 	= JFactory::getUser();
+		$app		= JFactory::getApplication();
+		$user		= JFactory::getUser();
 		$valguest	= JEMUser::validate_guest();
 		
-		$document = JFactory::getDocument();
-		$model = $this->getModel();
-		$menu = $app->getMenu();
-		$menuitem = $menu->getActive();
-		$pathway = $app->getPathway();
-		$url = JUri::root();
+		$document	= JFactory::getDocument();
+		$model		= $this->getModel();
+		$menu		= $app->getMenu();
+		$menuitem	= $menu->getActive();
+		$pathway	= $app->getPathway();
+		$url		= JUri::root();
+		$template	= $app->getTemplate();
 		
 		$settings 	= JemHelper::globalattribs();
 		$this->settings = $settings;
@@ -171,9 +172,9 @@ class JemViewEditevent extends JViewLegacy
 		// add css file
 		JemHelper::loadCss('jem');
 		JemHelper::loadCustomCss();
-
-		// Load scripts
-		JHtml::_('behavior.framework','1.4.0.1');
+		
+		# Load scripts	
+		JHtml::_('bootstrap.framework');
 		
 		if ($settings->get('editevent_show_attachmentstab',1)) {
 			JHtml::_('script', 'com_jem/attachments.js', false, true);
@@ -182,7 +183,6 @@ class JemViewEditevent extends JViewLegacy
 		if ($settings->get('editevent_show_othertab',1)) {
 			JHtml::_('script', 'com_jem/other.js', false, true);
 			JHtml::_('script', 'com_jem/recurrence.js', false, true);
-			JHtml::_('script', 'com_jem/unlimited.js', false, true);
 		}
 		
 		JHtml::_('script', 'com_jem/seo.js', false, true);
@@ -190,6 +190,7 @@ class JemViewEditevent extends JViewLegacy
 			JHtml::_('script', 'com_jem/antispam.js', false, true);
 		}
 		JHtml::_('behavior.tabstate');
+	
 
 		// Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx'));

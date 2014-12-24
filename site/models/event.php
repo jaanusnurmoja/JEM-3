@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -95,26 +95,12 @@ class JemModelEvent extends JModelItem
 
 				// Join on venue table.
 				$query->select('l.custom1 AS venue1, l.custom2 AS venue2, l.custom3 AS venue3, l.custom4 AS venue4, l.custom5 AS venue5, l.custom6 AS venue6, l.custom7 AS venue7, l.custom8 AS venue8, l.custom9 AS venue9, l.custom10 AS venue10, ' .
-				               'l.id AS locid, l.alias AS localias, l.venue, l.city, l.state, l.url, l.locdescription, l.locimage, l.city, l.postalCode, l.street, l.country, l.map, l.created_by AS venueowner, l.latitude, l.longitude, l.checked_out AS vChecked_out, l.checked_out_time AS vChecked_out_time');
+				               'l.id AS locid, l.alias AS localias, l.venue, l.city, l.state, l.url, l.locdescription, l.locimage, l.city, l.postalCode, l.street, l.country, l.map, l.created_by AS venueowner, l.latitude, l.longitude, l.timezone, l.checked_out AS vChecked_out, l.checked_out_time AS vChecked_out_time');
 				$query->join('LEFT', '#__jem_venues AS l ON a.locid = l.id');
 
 				# join over the category-tables
 				$query->join('LEFT', '#__jem_cats_event_relations AS rel ON rel.itemid = a.id');
 				$query->join('LEFT', '#__jem_categories AS c ON c.id = rel.catid');
-
-				// Get contact id
-				$subQuery = $db->getQuery(true);
-				$subQuery->select('MAX(contact.id) AS id');
-				$subQuery->from('#__contact_details AS contact');
-				$subQuery->where('contact.published = 1');
-				$subQuery->where('contact.user_id = a.created_by');
-
-				// Filter by language
-				if ($this->getState('filter.language')) {
-					$subQuery->where('(contact.language in (' . $db->quote(JFactory::getLanguage()->getTag()) . ',' . $db->quote('*') . ') OR contact.language IS NULL)');
-				}
-
-				$query->select('(' . $subQuery . ') as contactid2');
 
 				// Filter by language
 				/* commented out yet because it's incomplete
@@ -158,7 +144,7 @@ class JemModelEvent extends JModelItem
 				}
 
 				if (empty($data)) {
-					return JError::raiseError(404, JText::_('COM_JEM_EVENT_ERROR_EVENT_NOT_FOUND'));
+					throw new Exception(JText::_('COM_JEM_EVENT_ERROR_EVENT_NOT_FOUND'), 404);
 				}
 
 				// Convert parameter fields to objects.
@@ -223,13 +209,14 @@ class JemModelEvent extends JModelItem
 			}
 			catch (JException $e) {
 				if ($e->getCode() == 404) {
-					// Need to go thru the error handler to allow Redirect to
-					// work.
+					// Need to go thru the error handler to allow Redirect to work.
 					JError::raiseError(404, $e->getMessage());
+					return false;
 				}
 				else {
 					$this->setError($e);
 					$this->_item[$pk] = false;
+					return false;
 				}
 			}
 		}
@@ -455,7 +442,7 @@ class JemModelEvent extends JModelItem
 
 	/**
 	 * Method to check if the user is already registered
-	 * return false if not registered, 1 for registerd, 2 for waiting list
+	 * return false if not registered, 1 for registered, 2 for waiting list
 	 *
 	 * @access public
 	 * @return mixed false if not registered, 1 for registerd, 2 for waiting
@@ -465,17 +452,17 @@ class JemModelEvent extends JModelItem
 	function getUserIsRegistered()
 	{
 		// Initialize variables
-		$user = JFactory::getUser();
+		$user	= JFactory::getUser();
 		$userid = (int) $user->get('id', 0);
 
-		// usercheck
-		$query = 'SELECT waiting+1' . 		// 1 if user is registered, 2 if on waiting
-				// list
-		' FROM #__jem_register'
-		. ' WHERE uid = ' . $userid
-		. ' AND event = ' . $this->getState('event.id');
-		$this->_db->setQuery($query);
-		return $this->_db->loadResult();
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
+		$query->select(array('waiting+1')); // 1 if user is registered, 2 if on waiting
+		$query->from('#__jem_register');
+		$query->where(array('uid = '.$userid,'event = '. $this->getState('event.id')));
+	
+		$db->setQuery($query);
+		return $db->loadResult();
 	}
 
 	/**
@@ -487,33 +474,18 @@ class JemModelEvent extends JModelItem
 	 */
 	function getRegisters($event = false)
 	{
-		// avatars should be displayed
-		$settings = JEMHelper::globalattribs();
-
-		$avatar = '';
-		$join = '';
-
-		if ($settings->get('event_comunoption','0') == 1 && $settings->get('event_comunsolution','0') == 1) {
-			$avatar = ', c.avatar';
-			$join = ' LEFT JOIN #__comprofiler as c ON c.user_id = r.uid';
-		}
-
-		$name = $settings->get('global_regname','1') ? 'u.name' : 'u.username';
-
 		// Get registered users
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
-		$query = 'SELECT '
-				. $name . ' AS name, r.uid' . $avatar
-				. ' FROM #__jem_register AS r'
-				. ' LEFT JOIN #__users AS u ON u.id = r.uid'
-				. $join
-				. ' WHERE event = '. $event
-				. '   AND waiting = 0 ';
+		
+		$query->select(array('u.name,u.username, r.uid'));
+		$query->from('#__jem_register as r');
+		$query->join('LEFT', '#__users AS u ON u.id = r.uid');
+		$query->where(array('r.event = '.$event,'r.waiting = 0'));
 		$db->setQuery($query);
 
 		$registered = $db->loadObjectList();
-
+		
 		return $registered;
 	}
 
@@ -536,7 +508,7 @@ class JemModelEvent extends JModelItem
 		$user = JFactory::getUser();
 		$jemsettings = JEMHelper::config();
 
-		$event = (int) $this->_registerid;
+		$eventid = (int) $this->_registerid;
 
 		$uid = (int) $user->get('id');
 		$onwaiting = 0;
@@ -546,17 +518,24 @@ class JemModelEvent extends JModelItem
 			JError::raiseError(403, JText::_('COM_JEM_ALERTNOTAUTH'));
 			return;
 		}
+		
+		try {
+			$event = $this->getItem($eventid);
+		}
+		// error handling
+		catch (Exception $e) {
+			$event = false;
+		}
+		if (empty($event)) {
+			$this->setError(JText::_('COM_JEM_EVENT_ERROR_EVENT_NOT_FOUND'));
+			return false;
+		}
 
-		$this->setId($event);
-
-		$event2 = $this->getItem($pk = $this->_registerid);
-
-		if ($event2->maxplaces > 0) 		// there is a max
+		if ($event->maxplaces > 0) 		// there is a max
 		{
 			// check if the user should go on waiting list
-			$attendees = self::getRegisters($event);
-			if (count($attendees) >= $event2->maxplaces) {
-				if (!$event2->waitinglist) {
+			if ($event->booked >= $event->maxplaces) {
+				if (!$event->waitinglist) {
 					$this->setError(JText::_('COM_JEM_ERROR_REGISTER_EVENT_IS_FULL'));
 					return false;
 				}
@@ -568,7 +547,7 @@ class JemModelEvent extends JModelItem
 		$uip = $jemsettings->storeip ? JemHelper::retrieveIP() : false;
 
 		$obj = new stdClass();
-		$obj->event = (int) $event;
+		$obj->event = (int) $eventid;
 		$obj->waiting = $onwaiting;
 		$obj->uid = (int) $uid;
 		$obj->uregdate = gmdate('Y-m-d H:i:s');
@@ -589,7 +568,7 @@ class JemModelEvent extends JModelItem
 	{
 		$user = JFactory::getUser();
 
-		$event = (int) $this->_registerid;
+		$eventid = (int) $this->_registerid;
 		$userid = $user->get('id');
 
 		// Must be logged in
@@ -597,15 +576,67 @@ class JemModelEvent extends JModelItem
 			JError::raiseError(403, JText::_('COM_JEM_ALERTNOTAUTH'));
 			return;
 		}
+		
+		$db 	= JFactory::getDBO();
+		$query	= $db->getQuery(true);
+		
+		$query->delete('#__jem_register');	
+		$query->where(array('event = ' . $eventid,'uid= ' . $userid));
+		
+		$db->SetQuery($query);
 
-		$query = 'DELETE FROM #__jem_register WHERE event = ' . $event . ' AND uid= ' . $userid;
-		$this->_db->SetQuery($query);
-
-		if (!$this->_db->execute()) {
-			JError::raiseError(500, $this->_db->getErrorMsg());
+		if (!$db->execute()) {
+			JError::raiseError(500, $db->getErrorMsg());
 		}
 
 		return true;
+	}
+	
+	function getKunenaConfig() {
+		static $kconfig = false;
+		if ($kconfig === false) {
+			// Run only one time
+			$kconfig = null;
+	
+			// Make sure that Kunena API (if exists) has been loaded
+			$api = JPATH_ADMINISTRATOR . '/components/com_kunena/api.php';
+			if (is_file($api))
+				require_once $api;
+	
+			if (class_exists('KunenaFactory')) {
+	
+				// Support for Kunena 1.6, 1.7 and 2.0
+				$kconfig = KunenaFactory::getConfig();
+	
+			} elseif (is_file(JPATH_ROOT.'/components/com_kunena/lib/kunena.config.class.php')) {
+	
+				// Support for Kunena 1.0 and 1.5
+				require_once JPATH_ROOT.'/components/com_kunena/lib/kunena.config.class.php';
+	
+				// Next 4 lines are needed to make <1.0.9 and <1.5.2 to work
+				if (is_file(JPATH_ROOT.'/components/com_kunena/lib/kunena.debug.php'))
+					require_once JPATH_ROOT.'/components/com_kunena/lib/kunena.debug.php';
+				if (is_file(JPATH_ROOT.'/components/com_kunena/lib/kunena.user.class.php'))
+					require_once JPATH_ROOT.'/components/com_kunena/lib/kunena.user.class.php';
+	
+				if (method_exists('CKunenaConfig', 'getInstance')) {
+					// Support for Kunena 1.0.9+ and 1.5
+					$kconfig = CKunenaConfig::getInstance();
+	
+				} elseif (class_exists('CKunenaConfig')) {
+					// Support for Kunena 1.0.8
+					$kconfig = new CKunenaConfig();
+					$kconfig->load();
+	
+				} elseif (class_exists('fb_Config')) {
+					// Support for Kunena 1.0.6RC2 and 1.0.7b
+					$kconfig = new fb_Config();
+					$kconfig->load();
+	
+				}
+			}
+		}
+		return $kconfig;
 	}
 }
 ?>

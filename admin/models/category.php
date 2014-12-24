@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -830,7 +830,7 @@ class JemModelCategory extends JModelAdmin
 		
 		if (count($err)) {
 			$cids = implode(', ', $err);
-			$msg = JText::sprintf('COM_JEM_EVENT_ASSIGNED_CATEGORY', $cids);
+			$msg = JText::sprintf('COM_JEM_CATEGORIES_ASSIGNED_EVENT', $cids);
 			return $msg;
 		}
 		else {

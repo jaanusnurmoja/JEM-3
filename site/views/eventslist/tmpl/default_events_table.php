@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -11,12 +11,12 @@ defined('_JEXEC') or die;
 $print = $this->print;
 $admin = $this->admin;
 ?>
-<?php if ($this->settings->get('global_show_filter',1) || $this->settings->get('global_display',1)) : 
-//echo JLayoutHelper::render('searchtools.default', array('view' => $this),JPATH_ROOT .'/components/com_jem/layouts');
-?>
-	<div id="jem_filter" class="floattext">
+
+<form action="<?php echo $this->action; ?>" method="post" name="adminForm" id="adminForm">
+<?php if ($this->settings->get('global_show_filter',1) || $this->settings->get('global_display',1)) : ?>
+<div id="jem_filter" class="clearfix">
 		<?php if ($this->settings->get('global_show_filter',1)) : ?>
-			<div class="jem_fleft">
+			<div class="pull-left">
 				<?php
 					echo $this->lists['filter'].'&nbsp;';
 				?>
@@ -28,7 +28,7 @@ $admin = $this->admin;
 			</div>
 		<?php endif; ?>
 		<?php if ($this->settings->get('global_display',1)) : ?>
-			<div class="jem_fright">
+			<div class="pull-right">
 				<?php
 					echo $this->pagination->getLimitBox();
 				?>
@@ -67,39 +67,38 @@ $admin = $this->admin;
 	<thead>
 		<tr>
 			<?php if ($this->jemsettings->showeventimage == 1) : ?>
-				<th id="jem_eventimage" class="sectiontableheader" align="left"><?php echo JText::_('COM_JEM_TABLE_EVENTIMAGE'); ?></th>
+				<th id="jem_eventimage" class="sectiontableheader"><?php echo JText::_('COM_JEM_TABLE_EVENTIMAGE'); ?></th>
 			<?php endif; ?>
-				<th id="jem_date" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_DATE', 'a.dates', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+				<th id="jem_date" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_DATE', 'a.dates', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php if ($this->jemsettings->showtitle == 1) : ?>
-				<th id="jem_title" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_TITLE', 'a.title', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+				<th id="jem_title" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_TITLE', 'a.title', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showlocate == 1) : ?>
-				<th id="jem_location" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_LOCATION', 'l.venue', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+				<th id="jem_location" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_LOCATION', 'l.venue', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showcity == 1) : ?>
-				<th id="jem_city" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CITY', 'l.city', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+				<th id="jem_city" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CITY', 'l.city', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showcat == 1) : ?>
-				<th id="jem_category" class="sectiontableheader" align="left"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CATEGORY', 'c.catname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
+				<th id="jem_category" class="sectiontableheader"><?php echo JHtml::_('grid.sort', 'COM_JEM_TABLE_CATEGORY', 'c.catname', $this->lists['order_Dir'], $this->lists['order']); ?></th>
 			<?php endif; ?>
 			<?php if ($this->jemsettings->showatte == 1) : ?>
-				<th id="jem_attendees" class="sectiontableheader" align="center"><?php echo JText::_('COM_JEM_TABLE_ATTENDEES'); ?></th>
+				<th id="jem_attendees" class="sectiontableheader"><?php echo JText::_('COM_JEM_TABLE_ATTENDEES'); ?></th>
 			<?php endif; ?>
 			<?php if ($admin && !$print) { ?>
-				<th id="jem_edit" class="sectiontableheader" align="center"></th>
+				<th id="jem_edit" class="sectiontableheader"></th>
 			<?php } ?>
 		</tr>
 	</thead>
 
 	<tbody>
 		<?php if ($this->noevents == 1) : ?>
-			<tr align="center"><td colspan="20"><?php echo JText::_('COM_JEM_NO_EVENTS'); ?></td></tr>
+			<tr class="noevents"><td colspan="20"><?php echo JText::_('COM_JEM_NO_EVENTS'); ?></td></tr>
 		<?php else : ?>
 			<?php $this->rows = $this->getRows(); ?>
 			<?php foreach ($this->rows as $row) : ?>
 			
 			<?php
-			
 			$params		= $row->params;
 			$images 	= json_decode($row->datimage);
 			$canEdit	= $row->params->get('access-edit');
@@ -114,7 +113,7 @@ $admin = $this->admin;
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showeventimage == 1) : ?>
-					<td class="jem_eventimage" align="left" valign="top">
+					<td class="jem_eventimage">
 						<?php if (!empty($row->datimage)) : ?>
 							<?php
 							$dimage = JemImage::flyercreator($row->datimage, 'event');
@@ -124,7 +123,7 @@ $admin = $this->admin;
 					</td>
 				<?php endif; ?>
 
-				<td class="jem_date" align="left">
+				<td class="jem_date">
 					<?php
 						echo JemOutput::formatShortDateTime($row->dates, $row->times,
 							$row->enddates, $row->endtimes);
@@ -132,9 +131,22 @@ $admin = $this->admin;
 							$row->enddates, $row->endtimes);
 					?>
 				</td>
+				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 2)) : ?>
+				<?php if ($this->escape($row->introtext) != "" ) { ?>
+					<td class="jem_title">
+						<a href="<?php echo JRoute::_(JemHelperRoute::getEventRoute($row->slug)); ?>" itemprop="url">
+							<span itemprop="name"><?php echo $this->escape($row->title); ?></span>
+						</a>
+					</td>
+				<?php } else { ?>
+				<td class="jem_title" itemprop="name">
+						<?php echo $this->escape($row->title); ?>
+					</td>
+				<?php } ?>
+				<?php endif; ?>
 
 				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 1)) : ?>
-					<td class="jem_title" align="left" valign="top">
+					<td class="jem_title">
 						<a href="<?php echo JRoute::_(JemHelperRoute::getEventRoute($row->slug)); ?>" itemprop="url">
 							<span itemprop="name"><?php echo $this->escape($row->title); ?></span>
 						</a>
@@ -142,13 +154,13 @@ $admin = $this->admin;
 				<?php endif; ?>
 
 				<?php if (($this->jemsettings->showtitle == 1) && ($this->jemsettings->showdetails == 0)) : ?>
-					<td class="jem_title" align="left" valign="top" itemprop="name">
+					<td class="jem_title" itemprop="name">
 						<?php echo $this->escape($row->title); ?>
 					</td>
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showlocate == 1) : ?>
-					<td class="jem_location" align="left" valign="top">
+					<td class="jem_location">
 						<?php if ($this->jemsettings->showlinkvenue == 1) : ?>
 							<?php echo !empty($row->locid) ? "<a href='".JRoute::_(JemHelperRoute::getVenueRoute($row->venueslug))."'>".$this->escape($row->venue)."</a>" : '-'; ?>
 						<?php else : ?>
@@ -158,25 +170,25 @@ $admin = $this->admin;
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showcity == 1) : ?>
-					<td class="jem_city" align="left" valign="top">
+					<td class="jem_city">
 						<?php echo !empty($row->city) ? $this->escape($row->city) : '-'; ?>
 					</td>
 				<?php endif; ?>
 
 
 				<?php if ($this->jemsettings->showcat == 1) : ?>
-					<td class="jem_category" align="left" valign="top">
+					<td class="jem_category">
 						<?php echo implode(", ", JemOutput::getCategoryList($row->categories, $this->jemsettings->catlinklist)); ?>
 					</td>
 				<?php endif; ?>
 
 				<?php if ($this->jemsettings->showatte == 1) : ?>
-					<td class="jem_attendees" align="left" valign="top">
+					<td class="jem_attendees">
 						<?php echo !empty($row->regCount) ? $this->escape($row->regCount) : '-'; ?>
 					</td>
 				<?php endif; ?>
 				<?php if ($admin && !$print) { ?>
-					<td class="jem_edit" align="left" valign="top">
+					<td class="jem_edit">
 						<?php echo JemOutput::editbutton($row, $params, $attribs, true, 'eventslist'); ?>
 					</td>
 				<?php } ?>
@@ -185,3 +197,9 @@ $admin = $this->admin;
 		<?php endif; ?>
 	</tbody>
 </table>
+
+		<input type="hidden" name="task" value="<?php echo $this->task; ?>" />
+		<input type="hidden" name="view" value="eventslist" />
+		<input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir'] ?>" />
+	</form>

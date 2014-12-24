@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -58,7 +58,7 @@ class JEMController extends JControllerLegacy
 	 */
 	function ajaxattachremove()
 	{
-		$id = JFactory::getApplication()->input->request->get('id', 0, 'int');
+		$id = JFactory::getApplication()->input->request->getInt('id', 0);
 
 		$res = JEMAttachment::remove($id);
 		if (!$res) {

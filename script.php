@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -177,6 +177,7 @@ class com_jemInstallerScript
 		$this->getHeader(); ?>
 		<h2><?php echo JText::_('COM_JEM_UPDATE_STATUS'); ?>:</h2>
 		<p><?php echo JText::sprintf('COM_JEM_UPDATE_TEXT', $parent->get('manifest')->version); ?></p>;
+		
 		<?php
 	}
 
@@ -246,7 +247,7 @@ class com_jemInstallerScript
 	 * @return void
 	 */
 	function postflight($type, $parent)
-	{
+	{	
 		// $type is the type of change (install, update or discover_install)
 		echo '<p>' . JText::_('COM_JEM_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
 
@@ -416,10 +417,21 @@ class com_jemInstallerScript
 			# 3.0.2 -> 3.0.3
 			'/components/com_jem/models/categorycal.php',
 			'/components/com_jem/models/venuecal.php',
+			'/components/com_jem/models/forms/filter_eventslist.xml',
 			'/components/com_jem/views/category/tmpl/calendar.php',
 			'/components/com_jem/views/category/tmpl/calendar.xml',
 			'/components/com_jem/views/venue/tmpl/calendar.php',
-			'/components/com_jem/views/venue/tmpl/calendar.xml'
+			'/components/com_jem/views/venue/tmpl/calendar.xml',
+			'/components/com_jem/views/eventslist/tmpl/default_attachments.php',
+			'/components/com_jem/layouts/searchtools/default.php',
+			'/components/com_jem/layouts/searchtools/default/bar.php',
+			'/components/com_jem/layouts/searchtools/default/filters.php',
+			'/components/com_jem/layouts/searchtools/default/list.php',
+			'/components/com_jem/layouts/searchtools/grid/sort.php',
+			'/media/com_jem/js/settings.js',
+			'/media/com_jem/js/unlimited.js',
+			# 3.0.3 -> 3.0.4
+			'/media/com_jem/js/dropdown.js'
 		);
 		$folders = array();
 
@@ -442,9 +454,12 @@ class com_jemInstallerScript
 	 */
 	private function update303(){
 
-		require_once (JPATH_COMPONENT_SITE.'/classes/categories.class.php');
 
-		# update calendar entries
+		###############################
+		## # update calendar entries ##
+		###############################
+		require_once (JPATH_SITE.'/components/com_jem/classes/categories.class.php');
+
 		$types = array('calendar','category','venue');
 
 		foreach ($types as $type) :
@@ -486,25 +501,77 @@ class com_jemInstallerScript
 			
 				if ($type == 'calendar') {
 					# retrieve value 'top_category'
-					$top_category	= $params['top_category'];
-					$children = JEMCategories::getChilds($top_category);
-					if (count($children)) {
-						$params['catids'] = implode(',', $children);
-						$params['catidsfilter'] = 1;
+					if (isset($params['top_category'])) {
+						$top_category	= $params['top_category'];
+						$childs = JEMCategories::getChilds($top_category);
+
+						# see if we're dealing with root as first array value
+						# if so then we're taking that value and are hiding it so it will display all other categories
+
+						$first = reset($childs);
+
+						if ($first == 0 || $first == 1) {
+							$params['catids'] = 1;
+							$params['catidsfilter'] = 0;
+						} else {
+							if (count($childs) > 1) {
+								# strip of first value as that one is the category it's retreving childs from
+								$reorder = array_shift($childs);
+								$params['catids'] = $childs;
+								$params['catidsfilter'] = 1;
+							} 
+						}
+					}	else {
+						$params['catids'] = 1;
+						$params['catidsfilter'] = 0;
 					}
 				}
 				
 				# store params + new link value
 				$paramsString = json_encode($params);
-						
+				
 				$query = $db->getQuery(true);
 				$query->update('#__menu')
 				->set(array('params = '.$db->quote($paramsString),'link = '.$db->Quote('index.php?option=com_jem&view=calendar')))
 				->where(array("id = ".$item->id));
 				$db->setQuery($query);
-				$db->query();
-									
+				$db->execute();							
 			endforeach;
-		endforeach;		
+		endforeach;	
+
+		
+		##############################
+		## Removal of version field ##
+		##############################
+		
+		$query = $db->getQuery(true);
+		$settings_result = array();
+			
+		try
+		{
+			$db->setQuery('SHOW FULL COLUMNS FROM #__jem_settings');
+			$fields = $db->loadObjectList();
+				
+			foreach ($fields as $field){
+				$settings_result[$field->Field] = preg_replace("/[(0-9)]/", '', $field->Type);
+			}
+		
+			$settings_result = array_keys($settings_result);
+		}
+		catch (Exception $e)
+		{
+			$settings_result = false;
+		}
+		
+		if ($settings_result) {
+			if (in_array('version',$settings_result)) {
+				# the version was not added in the update.sql of JEM 3.0.2 but it was in the install.sql
+				# as the field can be removed we've to check if the field is there and if so then fire up an action
+				# to remove the field
+				$query = $db->getQuery(true);
+				$db->setQuery('alter table #__jem_settings drop column version');
+				$db->query();
+			} 
+		}
 	}
 }

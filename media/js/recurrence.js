@@ -1,18 +1,18 @@
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
- * @author Sascha Karnatz
  */
 
-jQuery(document).ready(function() {	
+jQuery(function() {
 		checkRecurrence();
 		
 		jQuery( "#jform_recurrence_freq" ).change(function() {
 			checkRecurrence();
 		});
+});
 
 
 		function checkRecurrence() {
@@ -41,6 +41,7 @@ jQuery(document).ready(function() {
 			        untilgroup.show();
 			        wkgroup.hide();
 					wkstartgroup.hide();
+					wkgroup.show();
 			        break;
 			    case 2: // weekly
 			    	countgroup.hide();
@@ -49,6 +50,7 @@ jQuery(document).ready(function() {
 			    	untilgroup.show();
 			    	wkgroup.hide();
 			    	wkstartgroup.hide();
+			    	wkgroup.show();
 			        break;
 			    case 3: // monthly
 			    	countgroup.hide();
@@ -57,6 +59,7 @@ jQuery(document).ready(function() {
 			    	untilgroup.show();
 			    	wkgroup.hide();
 			    	wkstartgroup.hide();
+			    	wkgroup.show();
 			        break; 
 			    case 4: // yearly
 			    	countgroup.hide();
@@ -65,19 +68,12 @@ jQuery(document).ready(function() {
 			    	untilgroup.show();
 			    	wkgroup.hide();
 			    	wkstartgroup.hide();
-			        break; 
-			    case 5: // weekday
-			    	countgroup.hide();
-			    	exdatesgroup.show();
-			    	intgroup.show();
 			    	wkgroup.show();
-			    	untilgroup.show();
-			    	wkstartgroup.hide();
-			        break;      
+			        break; 
 			    default:
 				    count.val('');
 			    	exdates.val('');
-			    	interval.val('');
+			    	interval.val('1');
 			    	until.val('');
 			    	weekday.val('');
 			    	countgroup.hide();
@@ -89,4 +85,3 @@ jQuery(document).ready(function() {
 			}
 
 		}
-	});

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -26,6 +26,7 @@ class JemViewWeekcal extends JViewLegacy
 		$menuitem 	= $menu->getActive();
 		$jemsettings = JemHelper::config();
 		$params 	= $app->getParams();
+		$settings 	= JemHelper::globalattribs();
 
 		// Load css
 		JemHelper::loadCss('calendar');
@@ -47,7 +48,6 @@ class JemViewWeekcal extends JViewLegacy
 
 		$this->document->addStyleDeclaration($style);
 
-		JHtml::_('behavior.framework','1.4.0.1');
 		// add javascript (using full path - see issue #590)
 		JHtml::_('script', 'media/com_jem/js/calendar.js');
 
@@ -79,6 +79,7 @@ class JemViewWeekcal extends JViewLegacy
 		$this->rows 		= $rows;
 		$this->params		= $params;
 		$this->jemsettings	= $jemsettings;
+		$this->settings		= $settings;
 		$this->currentweek	= $currentweek;
 		$this->cal			= $cal;
 		$this->pageclass_sfx = htmlspecialchars($pageclass_sfx);

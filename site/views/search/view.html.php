@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -38,9 +38,6 @@ class JemViewSearch extends JEMView
 		// Decide which parameters should take priority
 		$useMenuItemParams = ($menuitem && $menuitem->query['option'] == 'com_jem'
 		                                && $menuitem->query['view'] == 'search');
-
-		// add javascript
-		JHtml::_('behavior.framework');
 
 		// Load css
 		JemHelper::loadCss('jem');

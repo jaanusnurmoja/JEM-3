@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -42,6 +42,7 @@ class JemViewEvent extends JEMView
 		$menuitem			= $menu->getActive();
 		$pathway 			= $app->getPathway();
 		$jinput 			= $app->input;
+		$this->KunenaConfig	= $this->get('KunenaConfig');
 
 		$this->params		= $app->getParams('com_jem');
 		$this->item			= $this->get('Item');
@@ -54,9 +55,9 @@ class JemViewEvent extends JEMView
 		$categories			= $this->get('Categories');
 		$this->categories	= $categories;
 
-		$this->registers	= $model->getRegisters($this->state->get('event.id'));
+		
 		$isregistered		= $this->get('UserIsRegistered');
-
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseWarning(500, implode("\n", $errors));
@@ -66,6 +67,8 @@ class JemViewEvent extends JEMView
 		// Create a shortcut for $item and params.
 		$item   = $this->item;
 		$params = $this->params;
+		
+		$this->registers	= $model->getRegisters($this->state->get('event.id'));
 
 		// Decide which parameters should take priority
 		$useMenuItemParams = ($menuitem && $menuitem->query['option'] == 'com_jem'
@@ -115,7 +118,7 @@ class JemViewEvent extends JEMView
 		$offset = $this->state->get('list.offset');
 
 		// Check the view access to the event (the model has already computed the values).
-		if (!$item->params->get('access-view') && !$item->params->get('show_noauth') &&  $user->get('guest')) {
+		if ($item->params->get('access-view') == false) {
 			JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
@@ -239,10 +242,6 @@ class JemViewEvent extends JEMView
 		}
 		$this->formhandler			= $formhandler;
 		
-		
-		$this->showNameAttendee = $settings->get('event_show_name_attendee','1');
-		
-
 		// generate Metatags
 		$meta_keywords_content = "";
 		if (!empty($this->item->meta_keywords)) {
@@ -385,22 +384,20 @@ class JemViewEvent extends JEMView
 		$app	= JFactory::getApplication();
 		$menus	= $app->getMenu();
 		$pathway = $app->getPathway();
+		$template = $app->getTemplate();
 		$title = null;
 
 		# load CSS
 		JemHelper::loadCss('jem');
 		JemHelper::loadCustomCss();
 		JemHelper::loadCustomTag();
-
+		
 		if ($this->print) {
 			JemHelper::loadCss('print');
 			$this->document->setMetaData('robots', 'noindex, nofollow');
 		}
 		
-		# load JS
-		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_jem/dropdown.js', false, true);
-
+		
 	/*
 		// Because the application sets a default page title,
 		// we need to get it from the menu item itself

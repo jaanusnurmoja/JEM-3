@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -34,6 +34,7 @@ class JemViewVenue extends JEMView {
 			$menuitem		= $menu->getActive();
 			$jemsettings 	= JemHelper::config();
 			$settings 		= JemHelper::globalattribs();
+			$vsettings		= JemHelper::viewSettings('vvenue');
 			$db 			= JFactory::getDBO();
 			$params 		= $app->getParams('com_jem');
 			$pathway 		= $app->getPathWay ();
@@ -49,15 +50,11 @@ class JemViewVenue extends JEMView {
 			JemHelper::loadCss('jem');
 			JemHelper::loadCustomCss();
 			JemHelper::loadCustomTag();
-
+			
 			if ($print) {
 				JemHelper::loadCss('print');
 				$document->setMetaData('robots', 'noindex, nofollow');
 			}
-			
-			# load JS
-			JHtml::_('bootstrap.framework');
-			JHtml::_('script', 'com_jem/dropdown.js', false, true);
 				
 			// get data from model
 			$rows	= $this->get('Items');
@@ -249,6 +246,7 @@ class JemViewVenue extends JEMView {
 			$this->pagination 			= $pagination;
 			$this->jemsettings 			= $jemsettings;
 			$this->settings				= $settings;
+			$this->vsettings			= $vsettings;
 			$this->item					= $menuitem;
 			$this->pagetitle			= $pagetitle;
 			$this->task					= $task;

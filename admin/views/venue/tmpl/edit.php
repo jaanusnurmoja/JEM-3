@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -8,7 +8,6 @@
  */
 defined('_JEXEC') or die;
 
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.modal', 'a.modal');
@@ -35,22 +34,22 @@ $slidesOptions = array(
 		}
 	}
 
-	window.addEvent('domready', function() {		
+	window.addEvent('domready', function() {
 		setAttribute();
 		test();
 	});
 
 	function setAttribute(){
-		document.getElementById("tmp_form_postalCode").setAttribute("geo-data", "postal_code");
-		document.getElementById("tmp_form_city").setAttribute("geo-data", "locality");
-		document.getElementById("tmp_form_state").setAttribute("geo-data", "administrative_area_level_1");
-		document.getElementById("tmp_form_street").setAttribute("geo-data", "street_address");
-		document.getElementById("tmp_form_route").setAttribute("geo-data", "route");
-		document.getElementById("tmp_form_streetnumber").setAttribute("geo-data", "street_number");
-		document.getElementById("tmp_form_country").setAttribute("geo-data", "country_short");
-		document.getElementById("tmp_form_latitude").setAttribute("geo-data", "lat");
-		document.getElementById("tmp_form_longitude").setAttribute("geo-data", "lng");
-		document.getElementById("tmp_form_venue").setAttribute("geo-data", "name");	
+		jQuery("#tmp_form_postalCode").attr("geo-data", "postal_code");
+		jQuery("#tmp_form_city").attr("geo-data", "locality");
+		jQuery("#tmp_form_state").attr("geo-data", "administrative_area_level_1");
+		jQuery("#tmp_form_street").attr("geo-data", "street_address");
+		jQuery("#tmp_form_route").attr("geo-data", "route");
+		jQuery("#tmp_form_streetnumber").attr("geo-data", "street_number");
+		jQuery("#tmp_form_country").attr("geo-data", "country_short");
+		jQuery("#tmp_form_latitude").attr("geo-data", "lat");
+		jQuery("#tmp_form_longitude").attr("geo-data", "lng");
+		jQuery("#tmp_form_venue").attr("geo-data", "name");	
 	}
 
 	function meta(){
@@ -87,19 +86,19 @@ $slidesOptions = array(
 	function addrequired() {
 		var form = document.getElementById('venue-form');
 
-		$(form.jform_street).addClass('required');
-		$(form.jform_postalCode).addClass('required');
-		$(form.jform_city).addClass('required');
-		$(form.jform_country).addClass('required');
+		jQuery(form.jform_street).addClass('required');
+		jQuery(form.jform_postalCode).addClass('required');
+		jQuery(form.jform_city).addClass('required');
+		jQuery(form.jform_country).addClass('required');
 	}
 
 	function removerequired() {
 		var form = document.getElementById('venue-form');
 
-		$(form.jform_street).removeClass('required');
-		$(form.jform_postalCode).removeClass('required');
-		$(form.jform_city).removeClass('required');
-		$(form.jform_country).removeClass('required');
+		jQuery(form.jform_street).removeClass('required');
+		jQuery(form.jform_postalCode).removeClass('required');
+		jQuery(form.jform_city).removeClass('required');
+		jQuery(form.jform_country).removeClass('required');
 	}
 
 	jQuery(function() {
@@ -182,20 +181,9 @@ $slidesOptions = array(
 
 
 		jQuery("#geocode" ).on("click", chkGeocode );
-
-
-		jQuery('#jform_map').on('keyup keypress blur change', function() {
-		    test();
-		});
-
-		jQuery('#jform_latitude').on('keyup keypress blur change', function() {
-		    test();
-		});
-
-		jQuery('#jform_longitude').on('keyup keypress blur change', function() {
-		    test();
-		});
-		
+		jQuery('#jform_map').on('keyup keypress blur change', test);
+		jQuery('#jform_latitude').on('keyup keypress blur change', test);
+		jQuery('#jform_longitude').on('keyup keypress blur change', test);
 	});
 </script>
 
@@ -213,47 +201,19 @@ $slidesOptions = array(
 			<legend>
 				<?php echo empty($this->item->id) ? JText::_('COM_JEM_NEW_VENUE') : JText::sprintf('COM_JEM_VENUE_DETAILS', $this->item->id); ?>
 			</legend>
-
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('venue');?></div>
-				<div class="controls"><?php echo $this->form->getInput('venue'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('street'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('street'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('postalCode'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('postalCode'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('city'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('city'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('country'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('country'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('latitude'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('latitude'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('longitude'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('longitude'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('url'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('url'); ?></div>
-			</div>
+			<?php 
+				echo $this->form->renderField('venue');
+				echo $this->form->renderField('alias');
+				echo $this->form->renderField('street');
+				echo $this->form->renderField('postalCode');
+				echo $this->form->renderField('city');
+				echo $this->form->renderField('state');
+				echo $this->form->renderField('country');
+				echo $this->form->renderField('latitude');
+				echo $this->form->renderField('longitude');
+				echo $this->form->renderField('url');
+				echo $this->form->renderField('map');
+			?>
 		</fieldset>
 		
 		<fieldset class="form-vertical">
@@ -280,17 +240,10 @@ $slidesOptions = array(
 <!-- Publishing -->
 	<?php echo JHtml::_('bootstrap.addSlide', 'venue-sliders-'.$this->item->id, JText::_('COM_JEM_FIELDSET_PUBLISHING'), 'venue-publishing'); ?>
 		<fieldset class="form-vertical">
-			
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-			</div>
-
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('published'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('published'); ?></div>
-			</div>
-			
+		<?php 
+			echo $this->form->renderField('id');
+			echo $this->form->renderField('published');
+		?>
 		<?php foreach($this->form->getFieldset('publish') as $field): ?>
 			<div class="control-group">
 				<div class="control-label"><?php echo $field->label; ?></div>
@@ -317,10 +270,9 @@ $slidesOptions = array(
 <!-- IMAGE -->
 	<?php echo JHtml::_('bootstrap.addSlide', 'venue-sliders-'.$this->item->id, JText::_('COM_JEM_IMAGE'), 'venue-image'); ?>
 		<fieldset class="form-vertical">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('locimage'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('locimage'); ?></div>
-			</div>
+		<?php 
+			echo $this->form->renderField('locimage');
+		?>
 		</fieldset>
 		<?php echo JHtml::_('bootstrap.endSlide'); ?>
 		
@@ -342,13 +294,7 @@ $slidesOptions = array(
 
 <!-- Geodata -->
 	<?php echo JHtml::_('bootstrap.addSlide', 'venue-sliders-'.$this->item->id, JText::_('COM_JEM_FIELDSET_GEODATA'), 'venue-geodata'); ?>
-	
-	
 		<fieldset class="form-vertical" id="geodata">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('map'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('map'); ?></div>
-			</div>
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('geocode'); ?></div>
 				<div class="controls"> <input type="checkbox" id="geocode" /></div>

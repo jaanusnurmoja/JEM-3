@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -20,30 +20,26 @@ JHtml::_('behavior.modal', 'a.flyermodal');
 $mapType = $this->mapType;
 ?>
 <?php if ($params->get('access-view')){?>
-
-
-<div id="jem" class="event_id<?php echo $this->item->did; ?> jem_event<?php echo $this->pageclass_sfx;?>"
-	itemscope="itemscope" itemtype="http://schema.org/Event">
+<div id="jem" class="event_id<?php echo $this->item->did; ?> jem_event<?php echo $this->pageclass_sfx;?>" itemscope itemtype="http://schema.org/Event">
 <div class="topbox">	
 	<div class="btn-group pull-right hidden-phone">
 		<?php 
 			if ($this->print) { 
 				echo JemOutput::printbutton($this->print_link, $this->params);
 			} else {
-				if ($this->settings->get('show_dropwdownbutton',1)) {
 		?>
-	
-		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> <span class="icon-cog"></span> <span class="caret"></span> </a>
-		<ul class="dropdown-menu">
-			<li><?php echo JemOutput::submitbutton($this->addeventlink, $this->params); ?></li>
-			<li><?php echo JemOutput::addvenuebutton($this->addvenuelink, $this->params, $this->jemsettings);?></li>
-			<li><?php if ($params->get('event_show_email_icon',1)) {echo JemOutput::mailbutton($this->item->slug, 'event', $this->params);} ?></li>
-			<li><?php if ($params->get('event_show_print_icon',1)) { echo JemOutput::printbutton($this->print_link, $this->params);}?></li>
-		</ul>
-		<?php }} ?>
-	</div></div>
+		<div class="button_flyer icons">
+		<?php
+			echo JemOutput::submitbutton($this->addeventlink, $this->params);
+			echo JemOutput::addvenuebutton($this->addvenuelink, $this->params, $this->jemsettings);
+			if ($params->get('event_show_email_icon',1)) {echo JemOutput::mailbutton($this->item->slug, 'event', $this->params);}
+			if ($params->get('event_show_print_icon',1)) { echo JemOutput::printbutton($this->print_link, $this->params);}
+		?>
+		</div>
+		<?php } ?>
+	</div>
+</div>
 		
-	<div class="clearfix"> </div>
 <div class="info_container">
 	<?php if ($this->params->get('show_page_heading', 1)) : ?>
 	<div class="page-header">
@@ -53,14 +49,7 @@ $mapType = $this->mapType;
 	</div>
 	<?php endif; ?>
 
-
-<!--------------------- 
-		EVENT-TAB
------------------------>	
-<?php //echo JHtml::_('tabs.start', 'event'.$this->item->id); ?>
-<?php //echo JHtml::_('tabs.panel',JText::_('COM_JEM_EVENT_TAB'), 'event-tab' ); ?>	
-	
-	<!-- Event -->
+<!-- Event -->
 	<h2 class="jem">
 	<?php
 		echo JText::_('COM_JEM_EVENT');
@@ -78,12 +67,11 @@ $mapType = $this->mapType;
 
 <!-- EVENT-INFO -->	
 <?php if ($this->img_position == 1) { ?>
-<div class="row-fluid container-fluid">
-	<div class="span12 row">
-		<div class="span7 col-md-7">	
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-7">	
 <?php } ?>
 
-<div class="dl">
 	<dl class="event_info">
 		<?php if ($params->get('event_show_detailstitle',1)) : ?>
 			<dt class="title"><?php echo JText::_('COM_JEM_TITLE').':'; ?></dt>
@@ -145,7 +133,7 @@ $mapType = $this->mapType;
 		<?php
 		for($cr = 1; $cr <= 10; $cr++) {
 			$currentRow = $this->item->{'custom'.$cr};
-			if(substr($currentRow, 0, 7) == "http://") {
+			if(preg_match('%^https?://[^\s]+$%', $currentRow)) {
 				$currentRow = '<a href="'.$this->escape($currentRow).'" target="_blank">'.$this->escape($currentRow).'</a>';
  			}
 			if($currentRow) {
@@ -178,13 +166,12 @@ $mapType = $this->mapType;
 		<?php echo JText::sprintf('COM_JEM_CONTACT', JHtml::_('link', JRoute::_($cntlink), $author)); ?>
 		<?php else: ?>
 		<?php echo JText::sprintf('COM_JEM_CONTACT', $author); ?>
-		<?php endif; ?>
 		</dd>
 		<?php endif; ?>
-		</dl></div>
+		</dl>
 		
 		<?php if ($this->img_position == 1) { ?>
-		</div><div class="span5 col-md-5">
+		</div><div class="col-md-5">
 			<?php if ($this->dimage) { ?>
 			<div class="image imageright">
 				<?php echo JemOutput::flyer($this->item, $this->dimage, 'event'); ?>
@@ -239,7 +226,7 @@ $mapType = $this->mapType;
          			<?php echo JText::_('COM_JEM_CONTACT') ; ?>
          		</h2>
 
-        		<dl class="dl">
+        		<dl>
         		<dt class="con_name"><?php echo JText::_('COM_JEM_NAME').':'; ?></dt>
         			<dd class="con_name">
           <?php        $contact = $this->item->conname;
@@ -272,13 +259,7 @@ $mapType = $this->mapType;
 	<?php if ($this->item->locid != 0) : ?>
 	<p></p>
 	
-<!--------------------------- 
-		VENUE-TAB
----------------------------->
-		
-<?php //echo JHtml::_('tabs.panel',JText::_('COM_JEM_VENUE_TAB'), 'venue-tab' ); ?>
-		<div itemprop="location" itemscope="itemscope"
-		itemtype="http://schema.org/Place">
+		<div>
 		<h2 class="location">
 			<?php
 			echo JText::_('COM_JEM_VENUE') ;
@@ -298,12 +279,11 @@ $mapType = $this->mapType;
 
 <!-- VENUE-INFO -->
 <?php if ($this->img_position == 1) { ?>
-	<div class="row-fluid container-fluid">
-		<div class="span12 row">
-			<div class="span7 col-md-7">	
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-7">	
 <?php } ?>
-		<div class="dl">
-		<dl class="location_dl">
+		<dl class="location_dl" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
 			<dt class="venue"><?php echo JText::_('COM_JEM_LOCATION').':'; ?></dt>
 			<dd class="venue">
 			<?php echo "<a href='".JRoute::_(JemHelperRoute::getVenueRoute($this->item->venueslug))."'>".$this->escape($this->item->venue)."</a>"; ?>
@@ -313,11 +293,7 @@ $mapType = $this->mapType;
 				<a target="_blank" href="<?php echo $this->item->url; ?>"> <?php echo JText::_('COM_JEM_WEBSITE'); ?></a>
 			<?php endif; ?>
 			</dd>
-		</dl></div>
 		<?php if ($params->get('event_show_detailsadress','1')) : ?>
-		<div class="dl">
-			<dl class="location_dl" itemprop="address" itemscope
-			itemtype="http://schema.org/PostalAddress">
 				<?php if ($this->item->street) : ?>
 				<dt class="venue_street"><?php echo JText::_('COM_JEM_STREET').':'; ?></dt>
 			<dd class="venue_street" itemprop="streetAddress">
@@ -359,7 +335,7 @@ $mapType = $this->mapType;
 				<?php
 		for($cr = 1; $cr <= 10; $cr++) {
 			$currentRow = $this->item->{'venue'.$cr};
-			if(substr($currentRow, 0, 7) == "http://") {
+			if(preg_match('%^https?://[^\s]+$%', $currentRow)) {
 				$currentRow = '<a href="'.$this->escape($currentRow).'" target="_blank">'.$this->escape($currentRow).'</a>';
  			}
 			if($currentRow) {
@@ -370,16 +346,14 @@ $mapType = $this->mapType;
 			}
 		}
 		?>
-
 				<?php if ($params->get('event_show_mapserv')== 1) : ?>
 					<?php echo JemOutput::mapicon($this->item,'event',$params); ?>
 				<?php endif; ?>
-			</dl></div>
-		<?php endif; ?>
-	
-	
+			<?php endif; ?>
+		</dl>
+		
 	<?php if ($this->img_position == 1) { ?>
-	</div><div class="span5 col-md-5">
+	</div><div class="col-md-5">
 <!-- image -->
 	<?php if ($this->limage) { ?>
 		<div class="image imageright">
@@ -424,19 +398,12 @@ $mapType = $this->mapType;
 	<?php endif; ?>
 
 	
-<!--------------------------- 
-		Registration-TAB
----------------------------->	
 
 	<?php if ($this->item->registra == 1) : ?>
-		<?php //echo JHtml::_('tabs.panel',JText::_('COM_JEM_REGISTRATION_TAB'), 'registration-tab' ); ?>
-	
 		<h2 class="register"><?php echo JText::_('COM_JEM_REGISTRATION'); ?></h2>
 			<?php echo $this->loadTemplate('attendees'); ?>
 	<?php endif; ?>
 
-	<?php //echo JHtml::_('tabs.end'); ?>
-	
 	</div>
 
 <!-- call dispatcher -->

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -23,10 +23,9 @@ defined('_JEXEC') or die;
 	<!-- IMAGE -->
 	<fieldset class="form-horizontal">
 	<legend><span class="legendcolor"><?php echo JText::_('COM_JEM_IMAGE'); ?></span></legend>
-		<div class="control-group ">
-			<div class="control-label"><?php echo $this->form->getLabel('locimage'); ?></div>
-			<div class="controls"><?php echo $this->form->getInput('locimage'); ?></div>
-		</div>
+	<?php 
+		echo $this->form->renderField('locimage');
+	?>
 		<?php
 		if ($this->item->locimage) :
 			echo JEMOutput::flyer($this->item, $this->limage, 'venue');

@@ -1,13 +1,12 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 defined('_JEXEC') or die;
-
 
 
 /**
@@ -58,18 +57,17 @@ class JemModelEventslist extends JModelList
 	{
 		$app				= JFactory::getApplication();
 		$jemsettings		= JemHelper::config();
-		$jinput             = JFactory::getApplication()->input;
+		$jinput             = $app->input;
 		$task               = $jinput->getCmd('task');
 		$itemid				= $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
-	
+			
 		# List state information
-		$limit		= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'int');
+		$limit		= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'uint');
 		$this->setState('list.limit', $limit);
 		
-		$limitstart = $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.limitstart', 'limitstart', 0, 'int');
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
 		$this->setState('list.start', $limitstart);
-
+		
 		# Search - variables
 		$search = $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_search', 'filter_search', '', 'string');
 		$this->setState('filter.filter_search', $search);
@@ -95,7 +93,6 @@ class JemModelEventslist extends JModelList
 		
 		$this->setState('filter.opendates', $params->get('showopendates', 0));
 
-		
 		###########
 		## ORDER ##
 		###########
@@ -123,61 +120,39 @@ class JemModelEventslist extends JModelList
 		}
 		
 			
-		$filter_order		= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_order', 'filter_order', $sortCol, 'cmd');
+		$filter_order		= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_order', 'filter_order', $sortCol, 'string');
 		$filter_order_DirDefault = $sortDir;
 		// Reverse default order for dates in archive mode
 		if($task == 'archive' && $filter_order == 'a.dates') {
 			$filter_order_DirDefault = $sortDirArchive;
 		}
-		$filter_order_Dir	= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_order_Dir', 'filter_order_Dir', $filter_order_DirDefault, 'word');
-		$filter_order		= JFilterInput::getInstance()->clean($filter_order, 'cmd');
-		$filter_order_Dir	= JFilterInput::getInstance()->clean($filter_order_Dir, 'word');
+		$filter_order_Dir	= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_order_Dir', 'filter_order_Dir', $filter_order_DirDefault, 'string');
+		$filter_order		= JFilterInput::getInstance()->clean($filter_order, 'string');
+		$filter_order_Dir	= JFilterInput::getInstance()->clean($filter_order_Dir, 'string');
 
 		if ($filter_order == 'a.dates') {
 			$orderby = array('a.dates '.$filter_order_Dir,'a.times '.$filter_order_Dir);
 		} else {
 			$orderby = $filter_order . ' ' . $filter_order_Dir;
 		}
-		
 
 		$this->setState('filter.orderby',$orderby);
-		
-		# @todo finetune
-		$this->setState('list.ordering',$filter_order);
-		$this->setState('list.direction', $filter_order_Dir);
-		
-
+			
 		################################
 		## EXCLUDE/INCLUDE CATEGORIES ##
 		################################
-
-		$catswitch 		= $params->get('categoryswitch', '');
-
-		# set included categories
-		if ($catswitch) {
-		$included_cats = trim($params->get('categoryswitchcats', ''));
-		if ($included_cats) {
-			$included_cats = explode(",", $included_cats);
-			$this->setState('filter.category_id', $included_cats);
-			$this->setState('filter.category_id.include', true);
-
-		}
+		
+		$catids = $params->get('catids');
+		$catidsfilter = $params->get('categoryswitch');
+		
+		if ($catids) {
+			$this->setState('filter.category_id',$catids);
+			$this->setState('filter.category_id.include',$catidsfilter);
 		}
 
-		# set excluded categories
-		if (!$catswitch) {
-		$excluded_cats = trim($params->get('categoryswitchcats', ''));
-				if ($excluded_cats) {
-				$excluded_cats = explode(",", $excluded_cats);
-				$this->setState('filter.category_id', $excluded_cats);
-				$this->setState('filter.category_id.include', false);
-		}
-		}
-
+	
 		$this->setState('filter.access', true);
 		$this->setState('filter.groupby',array('a.id'));
-
-		parent::populateState('a.dates', 'ASC');
 	}
 
 	/**
@@ -281,6 +256,10 @@ class JemModelEventslist extends JModelList
 		# country
 		$query->select(array('ct.name AS countryname'));
 		$query->join('LEFT', '#__jem_countries AS ct ON ct.iso2 = l.country');
+		
+		# Join over the asset groups.
+		$query->select('ag.title AS access_level')
+		->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
 		# the rest
 		$query->select(array($case_when_e, $case_when_l));
@@ -393,7 +372,8 @@ class JemModelEventslist extends JModelList
 				$query->where('a.dates IS NULL');
 				break;
 		}
-
+		
+		
 		#####################
 		### FILTER - BYCAT ##
 		#####################
@@ -480,7 +460,7 @@ class JemModelEventslist extends JModelList
 		if ($orderby) {
 			$query->order($orderby);
 		}
-
+		
 		return $query;
 	}
 
@@ -493,6 +473,8 @@ class JemModelEventslist extends JModelList
 		$items	= parent::getItems();
 
 		if ($items) {
+			$app 	= JFactory::getApplication();
+			$params = $app->getParams();
 			$user	= JFactory::getUser();
 			$userId	= $user->get('id');
 			$guest	= $user->get('guest');
@@ -509,7 +491,12 @@ class JemModelEventslist extends JModelList
 				$eventParams = new JRegistry;
 				$eventParams->loadString($item->attribs);
 			
-				$item->params = clone $this->getState('params');
+				if ($this->getState('params')) {
+					$item->params = clone $this->getState('params'); 
+				} else {
+					$params = new JRegistry;
+					$item->params = $params;
+				}
 				$item->params->merge($eventParams);
 			
 				# access permissions.
@@ -539,6 +526,11 @@ class JemModelEventslist extends JModelList
 				if ($access){
 					// If the access filter has been set, we already have only the events this user can view.
 					$item->params->set('access-view', true);
+				} else {
+					$user	= JFactory::getUser();
+					$groups = $user->getAuthorisedViewLevels();
+					
+					$item->params->set('access-view', in_array($item->access, $groups));
 				}
 			
 			
@@ -595,7 +587,7 @@ class JemModelEventslist extends JModelList
 		$case_when_c .= ' ELSE ';
 		$case_when_c .= $id_c.' END as catslug';
 
-		$query->select(array('DISTINCT c.id','c.catname','c.access','c.checked_out AS cchecked_out','c.color',$case_when_c));
+		$query->select(array('DISTINCT c.id','c.catname','c.path','c.access','c.checked_out AS cchecked_out','c.color',$case_when_c));
 		$query->from('#__jem_categories as c');
 		$query->join('LEFT', '#__jem_cats_event_relations AS rel ON rel.catid = c.id');
 
@@ -635,16 +627,16 @@ class JemModelEventslist extends JModelList
 		$db->setQuery($query3);
 		$groupnumber = $db->loadColumn();
 
-		if ($access){
-			$groups = implode(',', $user->getAuthorisedViewLevels());
-			$jemgroups = implode(',',$groupnumber);
+		//if ($access){
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$jemgroups = implode(',',$groupnumber);
 
-			if ($jemgroups) {
-				$query->where('(c.access IN ('.$groups.') OR c.groupid IN ('.$jemgroups.'))');
-			} else {
-				$query->where('(c.access IN ('.$groups.'))');
-			}
+		if ($jemgroups) {
+			$query->where('(c.access IN ('.$groups.') OR c.groupid IN ('.$jemgroups.'))');
+		} else {
+			$query->where('(c.access IN ('.$groups.'))');
 		}
+		//}
 
 
 		#######################
@@ -722,22 +714,24 @@ class JemModelEventslist extends JModelList
 			if (!is_null($item->enddates)) {
 				if ($item->enddates != $item->dates) {
 					$day = $item->start_day;
+					$multi = array();
 	
 					for ($counter = 0; $counter <= $item->datesdiff-1; $counter++) {
 						$day++;
 	
 						# next day:
 						$nextday = mktime(0, 0, 0, $item->start_month, $day, $item->start_year);
+						
+						# it's multiday regardless if other days are on next month
+						$item->multi = 'first';
+						$item->multitimes = $item->times;
+						$item->multiname = $item->title;
+						$item->sort = 'zlast';
 	
 						# ensure we only generate days of current month in this loop
 						if (strftime('%m', $this->_date) == strftime('%m', $nextday)) {
 							$multi[$counter] = clone $item;
 							$multi[$counter]->dates = strftime('%Y-%m-%d', $nextday);
-	
-							$item->multi = 'first';
-							$item->multitimes = $item->times;
-							$item->multiname = $item->title;
-							$item->sort = 'zlast';
 	
 							if ($multi[$counter]->dates < $item->enddates) {
 								$multi[$counter]->multi = 'middle';
@@ -761,12 +755,10 @@ class JemModelEventslist extends JModelList
 						}
 					} // for
 	
-					if (isset($multi)) {
-						# add generated days to data
-						$items = array_merge($items, $multi);
-						# unset temp array holding generated days before working on the next multiday event
-                    	unset($multi);
-					}
+					# add generated days to data
+					$items = array_merge($items, $multi);
+					# unset temp array holding generated days before working on the next multiday event
+					unset($multi);
 				}
 			}
 		} // foreach

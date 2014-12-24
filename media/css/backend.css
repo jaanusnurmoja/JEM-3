@@ -1,5 +1,5 @@
 /****
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -25,6 +25,20 @@
 .icon-48-venuesedit			{ background-image: url(../images/icon-48-venuesedit.png); }
 .icon-48-housekeeping		{ background-image: url(../images/icon-48-housekeeping.png); }
 .icon-48-plugins			{ background-image: url(../images/icon-48-plugins.png); }
+
+input.required {
+	
+}
+
+.btn-small.icon_print {
+	padding-bottom: 4px;
+	padding-top: 4px;
+}
+
+.btn-small.icon_csv {
+	padding-bottom:4px;
+	padding-top:4px;
+}
 
 
 /** linkicons **/
@@ -397,15 +411,6 @@ input#sqlexport{
 	margin-left: 0.3em;
 }
 
-/* prevent problem with Bluestork */
-#recurrence_output select,
-select#jform_recurrence_type {
-	float: none;
-}
-input#jform_recurrence_limit_date {
-	margin-left: 0;
-}
-
 fieldset.alert {
 	border:1px solid grey;
 }
@@ -423,4 +428,47 @@ tbody td.eventtitle {
    -moz-hyphens: auto;
     -ms-hyphens: auto;
         hyphens: auto;
+}
+
+/* JHTML Tabs */
+
+dl.tabs {
+    float: left;
+    margin: 10px 0px -1px;
+    z-index: 50;
+}
+
+dl.tabs dt {
+    float: left;
+    padding: 4px 10px;
+    border: 1px solid #CCC;
+    margin-left: 3px;
+    background: none repeat scroll 0% 0% #E9E9E9;
+    color: #666;
+}
+
+dl.tabs dt.open {
+    background: none repeat scroll 0% 0% #F9F9F9;
+    border-bottom: 1px solid #F9F9F9;
+    z-index: 100;
+    color: #000;
+}
+
+dl.tabs dt h3 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+dl.tabs dt h3 a:link {
+    color: #333;
+    outline: medium none;
+    text-decoration: none;
+}
+
+div.current {
+    clear: both;
+    border: 1px solid #CCC;
+    padding: 10px;
 }

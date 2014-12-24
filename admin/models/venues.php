@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -249,7 +249,7 @@ class JemModelVenues extends JModelList
 		// Errors occurred
 		if (count($err)) {
 			$cids 	= implode(', ', $err);
-			$msg 	= JText::sprintf('COM_JEM_VENUE_ASSIGNED_EVENT', $cids);
+			$msg 	= JText::sprintf('COM_JEM_VENUES_ASSIGNED_EVENT', $cids);
 			return $msg;
 		} else {
 			$total 	= count($cid);

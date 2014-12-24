@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -24,7 +24,9 @@ class JemViewCalendar extends JViewLegacy
 		$menu 		= $app->getMenu();
 		$menuitem	= $menu->getActive();
 		$jemsettings = JemHelper::config();
+		$vsettings	= JemHelper::viewSettings('vcalendar');
 		$params 	= $app->getParams();
+		$settings 	= JemHelper::globalattribs();
 
 		// Load css
 		JemHelper::loadCss('jem');
@@ -38,28 +40,26 @@ class JemViewCalendar extends JViewLegacy
 		$eventandmorecolor = $params->get('eventandmorecolor');
 
 		$style = '
-		div[id^=\'catz\'] a {color:' . $evlinkcolor . ';}
-		div[id^=\'catz\'] {background-color:'.$evbackgroundcolor .';}
-		.eventcontent {background-color:'.$evbackgroundcolor .';}
-		.eventandmore {background-color:'.$eventandmorecolor .';}
-		.today .daynum {background-color:'.$currentdaycolor.';}';
+		div#jem div[id^=\'catz\'] a {color:' . $evlinkcolor . ' !important;}
+		div#jem div[id^=\'catz\'] {background-color:'.$evbackgroundcolor .';}
+		div#jem .eventcontent {background-color:'.$evbackgroundcolor .'; !important}
+		div#jem .eventandmore {background-color:'.$eventandmorecolor .' !important;}
+		div#jem .today .daynum {background-color:'.$currentdaycolor.' !important;}';
 
 		$document->addStyleDeclaration($style);
-
-		JHtml::_('behavior.framework','1.4.0.1');
+		
 		// add javascript (using full path - see issue #590)
 		JHtml::_('script', 'media/com_jem/js/calendar.js');
 		
-		$year 	= JFactory::getApplication()->input->request->getInt('yearID', strftime("%Y"));
-		$month 	= JFactory::getApplication()->input->request->getInt('monthID', strftime("%m"));
+		$year 	= $app->input->request->getInt('yearID', strftime("%Y"));
+		$month 	= $app->input->request->getInt('monthID', strftime("%m"));
 
 		//get data from model and set the month
 		$model = $this->getModel();
 		$model->setDate(mktime(0, 0, 1, $month, 1, $year));
 
 		$rows			= $this->get('Items');
-		$special_days 	= $this->get('Specialdays');
-
+		
 		//Set Page title
 		$pagetitle   = $params->def('page_title', $menuitem->title);
 		$params->def('page_heading', $pagetitle);
@@ -77,18 +77,19 @@ class JemViewCalendar extends JViewLegacy
 		$document->setMetaData('title', $pagetitle);
 
 		//init calendar
-		$cal = new JEMCalendar($year, $month, 0, $app->getCfg('offset'));
+		$cal = new JEMCalendar($year, $month, 0);
 		$cal->enableMonthNav('index.php?view=calendar');
 		$cal->setFirstWeekDay($params->get('firstweekday', 1));
 		$cal->enableDayLinks(false);
 		//$cal->enableDatePicker();
 
-		$this->rows        = $rows;
-		$this->params      = $params;
-		$this->jemsettings = $jemsettings;
-		$this->cal         = $cal;
+		$this->rows			= $rows;
+		$this->params		= $params;
+		$this->jemsettings	= $jemsettings;
+		$this->settings		= $settings;
+		$this->vsettings	= $vsettings;
+		$this->cal			= $cal;
 		$this->pageclass_sfx = htmlspecialchars($pageclass_sfx);
-		$this->special_days = $special_days;
 
 		parent::display($tpl);
 	}

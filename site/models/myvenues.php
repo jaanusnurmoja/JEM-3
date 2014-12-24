@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -29,10 +29,9 @@ class JemModelMyvenues extends JModelLegacy
 		$jinput		 = JFactory::getApplication()->input;
 		$itemid		 = $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
 
-		$limit		= $app->getUserStateFromRequest('com_jem.myvenues.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'int');
-		$limitstart = $app->getUserStateFromRequest('com_jem.myvenues.'.$itemid.'.limitstart', 'limitstart', 0, 'int');
-		$limitstart = $limit ? (int)(floor($limitstart / $limit) * $limit) : 0;
-
+		$limit		= $app->getUserStateFromRequest('com_jem.myvenues.'.$itemid.'.limit', 'limit', $jemsettings->display_num, 'uint');
+		$limitstart = $app->input->get('limitstart', 0, 'uint');
+		
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
 	}

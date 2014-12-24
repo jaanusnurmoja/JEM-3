@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.1" method="upgrade">
 	<name>com_jem</name>
-	<creationDate>24 August 2014</creationDate>
+	<creationDate>December 2014</creationDate>
 	<author>JEM Community</author>
 	<copyright>Copyright (C) 2013-2014 joomlaeventmanager.net</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>info@joomlaeventmanager.net</authorEmail>
 	<authorUrl>http://www.joomlaeventmanager.net</authorUrl>
-	<version>3.0.2</version>
+	<version>3.0.5</version>
 	<description>COM_JEM_INSTALLATION_DESCRIPTION</description>
 
 	<scriptfile>script.php</scriptfile>
@@ -19,7 +19,6 @@
 		<folder>classes</folder>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
-		<folder>layouts</folder>
 		<folder>models</folder>
 		<folder>views</folder>
 		<folder>language</folder>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -47,12 +47,7 @@ defined('_JEXEC') or die;
 		// Load css
 		JHtml::_('stylesheet', 'com_jem/backend.css', array(), true);
 
-		// Load Scripts
-		//JHtml::_('bootstrap.framework');
-		
-		$document->addScript('http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
-
-		//assign data to template
+		// assign data to template
 		$this->user			= $user;
 		$this->jemsettings  = $jemsettings;
 		$this->settings		= $settings;
@@ -87,24 +82,11 @@ defined('_JEXEC') or die;
 
 		/* state */
 		if ($canDo->get('core.edit.state')) {
-			if ($this->state->get('filter.published') != 2) {
-				JToolBarHelper::publishList('events.publish', 'JTOOLBAR_PUBLISH', true);
-				JToolBarHelper::unpublishList('events.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-				JToolBarHelper::custom('events.featured', 'featured.png', 'featured_f2.png', 'JFEATURED', true);
-			}
-
-			if ($this->state->get('filter.published') != -1) {
-				JToolBarHelper::divider();
-				if ($this->state->get('filter_state') != 2) {
-					JToolBarHelper::archiveList('events.archive');
-				} elseif ($this->state->get('filter_state') == 2) {
-					JToolBarHelper::unarchiveList('events.publish');
-				}
-			}
-		}
-
-		if ($canDo->get('core.edit.state')) {
-			JToolBarHelper::checkin('events.checkin');
+			JToolBarHelper::publishList('events.publish', 'JTOOLBAR_PUBLISH', true);
+			JToolBarHelper::unpublishList('events.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+			JToolBarHelper::custom('events.featured', 'featured.png', 'featured_f2.png', 'JFEATURED', true);
+			JToolBarHelper::archiveList('events.archive');
+			JToolBarHelper::checkin('events.checkin');	
 		}
 
 		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete')) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -31,7 +31,7 @@ class JemController extends JControllerLegacy
 		$user		= JFactory::getUser();
 		$jinput 	= JFactory::getApplication()->input;
 
-		// Set the default view name and format from the Request.
+		// Set the default view name and format.
 		$id				= $jinput->getInt('a_id');
 		$viewName 		= $jinput->getCmd('view', 'eventslist');
 		$viewFormat 	= $document->getType();
@@ -39,6 +39,12 @@ class JemController extends JControllerLegacy
 
 		// Check for edit form.
 		if ($viewName == 'editevent' && !$this->checkEditId('com_jem.edit.editevent', $id)) {
+			// Somehow the person just went to the form - we don't allow that.
+			return JError::raiseError(403, JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+		}
+		
+		// Check for edit form.
+		if ($viewName == 'editvenue' && !$this->checkEditId('com_jem.edit.editvenue', $id)) {
 			// Somehow the person just went to the form - we don't allow that.
 			return JError::raiseError(403, JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
 		}
@@ -134,6 +140,5 @@ class JemController extends JControllerLegacy
 		echo 1;
 		jexit();
 	}
-
 }
 ?>

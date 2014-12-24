@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -20,17 +20,17 @@ $mapType = $this->mapType;
 	if ($this->print) { 
 		echo JemOutput::printbutton($this->print_link, $this->params);
 	} else {
-		if ($this->settings->get('show_dropwdownbutton',1)) {
 	?>
-		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> <span class="icon-cog"></span> <span class="caret"></span> </a>
-		<ul id="dropdown" class="dropdown-menu">
-			<li><?php echo JemOutput::printbutton($this->print_link, $this->params); ?></li>
-			<li><?php echo JemOutput::mailbutton($this->venue->slug, 'venue', $this->params); ?></li>
-			<li><?php echo JemOutput::submitbutton($this->addeventlink, $this->params); ?></li>
-			<li><?php echo JemOutput::addvenuebutton($this->addvenuelink, $this->params, $this->jemsettings);?></li>
-			<li><?php echo JemOutput::archivebutton($this->params, $this->task, $this->venue->slug);?></li>
-		</ul>		
-	<?php }} ?>			
+	<div class="button_flyer icons">
+	<?php 
+		echo JemOutput::printbutton($this->print_link, $this->params);
+		echo JemOutput::mailbutton($this->venue->slug, 'venue', $this->params);
+		echo JemOutput::submitbutton($this->addeventlink, $this->params);
+		echo JemOutput::addvenuebutton($this->addvenuelink, $this->params, $this->jemsettings);
+		echo JemOutput::archivebutton($this->params, $this->task, $this->venue->slug);
+	?>
+	</div>		
+	<?php } ?>			
 	</div>
 </div>
 <div class="clearfix"></div>
@@ -57,25 +57,18 @@ $mapType = $this->mapType;
 		<div class="image imagetop"><?php echo JemOutput::flyer($this->venue, $this->limage, 'venue'); ?></div>
 	<?php } ?>
 
-	<div class="row-fluid">
-	<div class="span12">
+	<div class="container-fluid">
+	<div class="row">
 	
-	<div class="span7">	
-	 	<div class="dl">
-	 	   <?php if (($this->settings->get('global_show_detlinkvenue',1)) && (!empty($this->venue->url))) : ?>
-		<dl class="location">
-		<dt class="title"><?php echo JText::_('COM_JEM_TITLE').':'; ?></dt>
-		<dd class="title" itemprop="name"><?php echo $this->escape($this->venue->venue); ?></dd>
-		
+	<div class="col-md-7">	
+		<dl class="location" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+	<?php if (($this->vsettings->get('show_detlinkvenue',1)) && (!empty($this->venue->url))) : ?>
 			<dt class="venue"><?php echo JText::_('COM_JEM_WEBSITE').':'; ?></dt>
 			<dd class="venue">
 				<a href="<?php echo $this->venue->url; ?>" target="_blank"><?php echo $this->venue->urlclean; ?></a>
 			</dd>
-		</dl>
 	<?php endif; ?>
-
-	<?php if ($this->settings->get('global_show_detailsadress',1)) : ?>
-		<dl class="location floattext" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+	<?php if ($this->vsettings->get('show_detailsadress',1)) : ?>
 			<?php if ($this->venue->street) : ?>
 			<dt class="venue_street"><?php echo JText::_('COM_JEM_STREET').':'; ?></dt>
 			<dd class="venue_street" itemprop="streetAddress">
@@ -116,7 +109,7 @@ $mapType = $this->mapType;
 			<?php
 			for($cr = 1; $cr <= 10; $cr++) {
 				$currentRow = $this->venue->{'custom'.$cr};
-				if(substr($currentRow, 0, 7) == "http://") {
+				if(preg_match('%^https?://[^\s]+$%', $currentRow)) {
 					$currentRow = '<a href="'.$this->escape($currentRow).'" target="_blank">'.$this->escape($currentRow).'</a>';
 	 			}
 				if($currentRow) {
@@ -129,14 +122,15 @@ $mapType = $this->mapType;
 			?>
 
 			<?php
-			if ($this->settings->get('global_show_mapserv')== 1) {
-				echo JemOutput::mapicon($this->venue,null,$this->settings);
+			if ($this->vsettings->get('show_mapserv')== 1) {
+				echo JemOutput::mapicon($this->venue,'venue',$this->vsettings);
 			}
+			endif;
 			?>
-		</dl></div>
+		</dl>
 	</div>
 	
-	<div class="span5">
+	<div class="col-md-5">
 		
 	</div> 	   
 	 	   
@@ -144,12 +138,11 @@ $mapType = $this->mapType;
 	</div>	
 	</div> <!-- row-fluid -->
 	<?php
-		if ($this->settings->get('global_show_mapserv')== 2) {
-			echo JemOutput::mapicon($this->venue,null,$this->settings);
+		if ($this->vsettings->get('show_mapserv')== 2) {
+			echo JemOutput::mapicon($this->venue,'venue',$this->vsettings);
 		}
 		?>
-	<?php endif; ?>
-	<?php if ($this->settings->get('global_show_mapserv')== 3) : ?>			
+	<?php if ($this->vsettings->get('show_mapserv')== 3) : ?>			
 			<input type="hidden" id="latitude" value="<?php echo $this->venue->latitude;?>">
 			<input type="hidden" id="longitude" value="<?php echo $this->venue->longitude;?>">
 			
@@ -159,15 +152,15 @@ $mapType = $this->mapType;
 			<input type="hidden" id="state" value="<?php echo $this->venue->state;?>">
 			<input type="hidden" id="postalCode" value="<?php echo $this->venue->postalCode;?>">
 			<input type="hidden" id="mapType" value="<?php echo $this->mapType;?>">
-		<?php echo JemOutput::mapicon($this->venue,null,$this->settings); ?>			
+		<?php echo JemOutput::mapicon($this->venue,'venue',$this->vsettings); ?>			
 	<?php endif; ?>
 	
 
-	<?php if ($this->settings->get('global_show_locdescription',1) && $this->venuedescription != '' &&
+	<?php if ($this->vsettings->get('show_locdescription',1) && $this->venuedescription != '' &&
 	          $this->venuedescription != '<br />') : ?>
 
 		<h2 class="description"><?php echo JText::_('COM_JEM_VENUE_DESCRIPTION'); ?></h2>
-		<div class="description no_space floattext" itemprop="description">
+		<div class="description no_space clearfix" itemprop="description">
 			<?php echo $this->venuedescription; ?>
 		</div>
 	<?php endif; ?>

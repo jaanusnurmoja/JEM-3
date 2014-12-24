@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -250,8 +250,9 @@ class JEMControllerEditevent extends JControllerForm
 		$isNew = $model->getState('editevent.new');
 		$id    = $model->getState('editevent.id');
 
-
-		if (JPluginHelper::importPlugin('jem','mailer')) {
+		$enabled = JPluginHelper::isEnabled('jem','mailer');
+	
+		if ($enabled) {
 			JPluginHelper::importPlugin('jem','mailer');
 			$dispatcher = JEventDispatcher::getInstance();
 			$dispatcher->trigger('onEventEdited', array($id, $isNew));
@@ -615,7 +616,6 @@ class JEMControllerEditevent extends JControllerForm
 		$recordId	= $jinput->getInt($urlVar);
 		$recurrence_group = $jinput->getInt('recurrence_group');
 
-
 		# Retrieve id of current event from recurrence_table
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -624,23 +624,23 @@ class JEMControllerEditevent extends JControllerForm
 		$query->where(array('groupid_ref = '.$recurrence_group, 'itemid= '.$recordId));
 		$db->setQuery($query);
 		$recurrenceid = $db->loadResult();
-
+	
 		# Update field recurrence_group in event-table
 		$db = JFactory::getDbo();
 		$query	= $db->getQuery(true);
 		$query->update('#__jem_events');
-		$query->set(array('recurrence_group = ""','recurrence_first_id = ""','recurrence_interval = ""','recurrence_type = ""','recurrence_counter = ""','recurrence_limit = ""','recurrence_limit_date = ""','recurrence_byday = ""'));
+		$query->set(array('recurrence_count = ""','recurrence_freq = ""','recurrence_group = ""','recurrence_interval = ""','recurrence_until = ""','recurrence_weekday = ""'));
 		$query->where('id = '.$recordId);
 		$db->setQuery($query)->query();
-
-		# Blank field groupid_ref in recurrence-table and set recurrence-id value
+	
+		# Blank field groupid_ref in recurrence-table and set exdate value
 		$recurrence_table	= JTable::getInstance('Recurrence', 'JEMTable');
 		$recurrence_table->load($recurrenceid);
-
+					
 		$startdate_org_input		= new JDate($recurrence_table->startdate_org);
 		$exdate						= $startdate_org_input->format('Ymd\THis\Z');
 		$recurrence_table->exdate	= $exdate;
-
+	
 		$recurrence_table->groupid_ref = "";
 		$recurrence_table->store();
 

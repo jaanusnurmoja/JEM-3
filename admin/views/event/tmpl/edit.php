@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -18,9 +18,10 @@ $slidesOptions = array();
 
 JHtml::_('behavior.framework');
 JHtml::_('behavior.modal', 'a.flyermodal');
-JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+//JHtml::_('formbehavior.chosen', 'select');
+
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
@@ -29,98 +30,80 @@ $params = $params->toArray();
 
 <script type="text/javascript">
 	window.addEvent('domready', function(){
-	checkmaxplaces();
+		checkmaxplaces();
 
-	$("jform_attribs_event_show_mapserv").addEvent('change', testmap);
+	jQuery('#jform_attribs_event_comunsolution').on( "change", testcomm );
+	
+	var nrcommhandler = jQuery('#jform_attribs_event_comunsolution').val();
 
-	var mapserv = $("jform_attribs_event_show_mapserv");
-	var nrmapserv = mapserv.options[mapserv.selectedIndex].value;
-
-	if (nrmapserv == 1 || nrmapserv == 2) {
-		eventmapon();
+	if (nrcommhandler == 1) {
+		common();
 	} else {
-		eventmapoff();
+		commoff();
 	}
 
+	starter("<?php echo JText::_('COM_JEM_META_ERROR'); ?>",jQuery("#jform_meta_keywords").val(),jQuery("jform_meta_description").val());
 
-	$('jform_attribs_event_comunsolution').addEvent('change', testcomm);
-
-	var commhandler = $("jform_attribs_event_comunsolution");
-	var nrcommhandler = commhandler.options[commhandler.selectedIndex].value;
-
-		if (nrcommhandler == 1) {
-			common();
-		} else {
-			commoff();
-		}
-
+	jQuery('#jform_meta_keywords')
+		.focus(function() {
+			get_inputbox('jform_meta_keywords');
+		})
+		.blur(function() {
+			change_metatags;
 	});
 
 
+	jQuery('#jform_meta_description')
+		.focus(function() {
+			get_inputbox('jform_meta_description');
+		})
+		.blur(function() {
+			change_metatags;
+	});
+	
+	});
+</script>
+<script type="text/javascript">
 	function checkmaxplaces()
 	{
-		$('jform_maxplaces').addEvent('change', function(){
-			if ($('event-available')) {
-						var val = parseInt($('jform_maxplaces').value);
-						var booked = parseInt($('event-booked').value);
-						$('event-available').value = (val-booked);
-			}
-			});
 
-		$('jform_maxplaces').addEvent('keyup', function(){
-			if ($('event-available')) {
-						var val = parseInt($('jform_maxplaces').value);
-						var booked = parseInt($('event-booked').value);
-						$('event-available').value = (val-booked);
+		jQuery("#jform_maxplaces").on("change", function() {
+			if (jQuery('#event-available')) {
+				var maxplaces = jQuery('#jform_maxplaces').val();
+				var booked = jQuery('#event-booked').val();
+				jQuery('#event-available').val(maxplaces-booked);
 			}
-			});
+		});
+
+		jQuery("#event-booked").on("change", function() {
+			if (jQuery('#event-available')) {
+				var maxplaces = jQuery('#jform_maxplaces').val();
+				var booked = jQuery('#event-booked').val();
+				jQuery('#event-available').val(maxplaces-booked);
+			}
+		});
+
 	}
-
 	
 	function testcomm()
 	{
-		var commhandler = $("jform_attribs_event_comunsolution");
-		var nrcommhandler = commhandler.options[commhandler.selectedIndex].value;
+		var nrcommhandler = jQuery('#jform_attribs_event_comunsolution').val();
 
 		if (nrcommhandler == 1) {
 			common();
 		} else {
 			commoff();
 		}
-	}
-
-	function testmap()
-	{
-		var mapserv = $("jform_attribs_event_show_mapserv");
-		var nrmapserv = mapserv.options[mapserv.selectedIndex].value;
-
-		if (nrmapserv == 1 || nrmapserv == 2) {
-			eventmapon();
-		} else {
-			eventmapoff();
-		}
-	}
-
-	function eventmapon()
-	{
-		document.getElementById('eventmap1').style.display = '';
-		document.getElementById('eventmap2').style.display = '';
-	}
-
-	function eventmapoff()
-	{
-		document.getElementById('eventmap1').style.display = 'none';
-		document.getElementById('eventmap2').style.display = 'none';
 	}
 
 	function common()
 	{
-		document.getElementById('comm1').style.display = '';
+		jQuery('#comm1').show();
 	}
 
 	function commoff()
 	{
-		document.getElementById('comm1').style.display = 'none';
+		jQuery('#comm1').hide();
 	}
 </script>
 <script type="text/javascript">
@@ -128,11 +111,7 @@ $params = $params->toArray();
 	{
 		if (task == 'event.cancel' || document.formvalidator.isValid(document.id('event-form'))) {
 			Joomla.submitform(task, document.getElementById('event-form'));
-
 			<?php echo $this->form->getField('articletext')->save(); ?>
-
-			$("meta_keywords").value = $keywords;
-			$("meta_description").value = $description;
 		}
 	}
 </script>
@@ -166,65 +145,32 @@ $params = $params->toArray();
 			<legend>
 				<?php echo empty($this->item->id) ? JText::_('COM_JEM_NEW_EVENT') : JText::sprintf('COM_JEM_EVENT_DETAILS', $this->item->id); ?>
 			</legend>
-
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('title');?></div>
-				<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('dates'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('dates'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('enddates'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('enddates'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('times'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('times'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('endtimes'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('endtimes'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('cats'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('cats'); ?></div>
-			</div>
+			<?php 
+				echo $this->form->renderField('title');
+				echo $this->form->renderField('alias');
+				echo $this->form->renderField('dates');
+				echo $this->form->renderField('enddates');
+				echo $this->form->renderField('times');
+				echo $this->form->renderField('endtimes');
+				echo $this->form->renderField('cats');
+			?>
 		</fieldset>
 
 		<fieldset class="form-horizontal">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('locid'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('locid'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('contactid'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('contactid'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('published'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('published'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('featured'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('featured'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
-			</div>
+		<?php 
+			echo $this->form->renderField('locid'); 
+			echo $this->form->renderField('contactid');
+			echo $this->form->renderField('published');
+			echo $this->form->renderField('featured');
+			echo $this->form->renderField('access');
+		?>
 		</fieldset>
 		
-		<fieldset class="adminform">
-			<div class="clr"></div>
-			<?php echo $this->form->getLabel('articletext'); ?>
-			<div class="clr"></div>
-			<?php echo $this->form->getInput('articletext'); ?>
+		<fieldset class="form-vertical">
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('articletext'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('articletext'); ?></div>
+			</div>
 		</fieldset>
 	<?php echo JHtml::_('bootstrap.endTab'); ?>
 
@@ -251,30 +197,14 @@ $params = $params->toArray();
 
 		<!-- RETRIEVING OF FIELDSET PUBLISHING -->
 		<fieldset class="form-vertical">
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('hits'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('hits'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('version'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('version'); ?></div>
-			</div>
+		<?php 
+			echo $this->form->renderField('id');
+			echo $this->form->renderField('created_by');
+			echo $this->form->renderField('hits');
+			echo $this->form->renderField('created');
+			echo $this->form->renderField('modified');
+			echo $this->form->renderField('version');
+		?>
 		</fieldset>
 <?php echo JHtml::_('bootstrap.endSlide'); ?>
 	
@@ -296,34 +226,24 @@ $params = $params->toArray();
 <!-- registra -->	
 	<?php echo JHtml::_('bootstrap.addSlide', 'slide', JText::_('COM_JEM_REGISTRATION'), 'event-registra'); ?>
 		<fieldset class="form-vertical">
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('registra'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('registra'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('unregistra'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('unregistra'); ?></div>
-			</div>
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('maxplaces'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('maxplaces'); ?></div>
-			</div>
+		<?php 
+			echo $this->form->renderField('registra'); 
+			echo $this->form->renderField('unregistra');
+			echo $this->form->renderField('maxplaces');
+		?>
 			<div class="control-group">	
 				<div class="control-label"><label><?php echo JText::_ ('COM_JEM_BOOKED_PLACES') . ':';?></label></div>
-				<div class="controls"><input id="event-booked" class="readonly" type="text"  value="<?php echo $this->item->booked; ?>" /></div>
+				<div class="controls"><input id="event-booked" aria-invalid="false" readonly="" class="readonly" type="text"  value="<?php echo $this->item->booked; ?>" /></div>
 			</div>
 			
 			<?php if ($this->item->maxplaces): ?>
 			<div class="control-group">	
 				<div class="control-label"><label><?php echo JText::_ ('COM_JEM_AVAILABLE_PLACES') . ':';?></label></div>
-				<div class="controls"><input id="event-available" class="readonly" type="text"  value="<?php echo ($this->item->maxplaces-$this->item->booked); ?>" /></div>
+				<div class="controls"><input id="event-available" aria-invalid="false" readonly="" class="readonly" type="text"  value="<?php echo ($this->item->maxplaces-$this->item->booked); ?>" /></div>
 			</div>
 			<?php endif; ?>
 
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('waitinglist'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('waitinglist'); ?></div>
-			</div>
+			<?php echo $this->form->renderField('waitinglist'); ?> 
 		</fieldset>
 <?php echo JHtml::_('bootstrap.endSlide'); ?>
 
@@ -331,10 +251,9 @@ $params = $params->toArray();
 <!-- Image -->
 	<?php echo JHtml::_('bootstrap.addSlide', 'slide', JText::_('COM_JEM_IMAGE'), 'event-image'); ?>
 		<fieldset class="form-vertical">
-			<div class="control-group">	
-				<div class="control-label"><?php echo $this->form->getLabel('datimage'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('datimage'); ?></div>
-			</div>
+		<?php 
+			echo $this->form->renderField('datimage'); 
+		?> 
 		</fieldset>
 	<?php echo JHtml::_('bootstrap.endSlide'); ?>
 
@@ -342,7 +261,7 @@ $params = $params->toArray();
 <!-- Recurrence -->
 	
 <?php if (!($this->item->recurrence_groupcheck)) { ?>
-	<?php echo JHtml::_('bootstrap.addSlide', 'slide', JText::_('COM_JEM_RECURRING_EVENTS'), 'event-recurrence'); ?>
+	<?php echo JHtml::_('bootstrap.addSlide', 'slide', JText::_('COM_JEM_EVENT_FIELDSET_RECURRING_EVENTS'), 'event-recurrence'); ?>
 		<fieldset class="form-vertical">
 			<?php 
 			echo $this->form->renderField('recurrence_freq'); 
@@ -379,29 +298,8 @@ $params = $params->toArray();
 				<input class="btn" type="button" onclick="insert_keyword('[enddates]')" value="<?php echo JText::_('COM_JEM_ENDDATE');?>" />
 				<input class="btn" type="button" onclick="insert_keyword('[endtimes]')" value="<?php echo JText::_('COM_JEM_END_TIME');?>" />
 			</p>
-			<div class="control-group">	
-				<div class="control-label"><label for="meta_keywords"><?php echo JText::_('COM_JEM_META_KEYWORDS').':';?></label></div>
-						<?php
-						if (! empty ( $this->item->meta_keywords )) {
-							$meta_keywords = $this->item->meta_keywords;
-						} else {
-							$meta_keywords = $this->jemsettings->meta_keywords;
-						}
-						?>
-				<div class="controls"><textarea class="inputbox" name="meta_keywords" id="meta_keywords" rows="5" cols="40" maxlength="150" onfocus="get_inputbox('meta_keywords')" onblur="change_metatags()"><?php echo $meta_keywords; ?></textarea></div>
-			</div>
-			
-			<div class="control-group">	
-				<div class="control-label"><label for="meta_description"><?php echo JText::_('COM_JEM_META_DESCRIPTION').':';?></label></div>
-					<?php
-					if (! empty ( $this->item->meta_description )) {
-						$meta_description = $this->item->meta_description;
-					} else {
-						$meta_description = $this->jemsettings->meta_description;
-					}
-					?>
-				<div class="controls"><textarea class="inputbox" name="meta_description" id="meta_description" rows="5" cols="40" maxlength="200"	onfocus="get_inputbox('meta_description')" onblur="change_metatags()"><?php echo $meta_description;?></textarea></div>
-			</div>
+			<?php  echo $this->form->renderField('meta_keywords'); ?>
+			<?php  echo $this->form->renderField('meta_description'); ?>
 		</fieldset>
 
 		<fieldset class="form-vertical">
@@ -417,20 +315,8 @@ $params = $params->toArray();
 
 		</fieldset>
 
-
-		<script type="text/javascript">
-		<!--
-			starter("<?php
-			echo JText::_ ( 'COM_JEM_META_ERROR' );
-			?>");	// window.onload is already in use, call the function manualy instead
-		-->
-		</script>
 	<?php echo JHtml::_('bootstrap.endSlide'); ?>
-	
-	
 	<?php echo JHtml::_('bootstrap.endAccordion'); ?>
-	
-	
 	
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="author_ip" value="<?php echo $this->item->author_ip; ?>" />

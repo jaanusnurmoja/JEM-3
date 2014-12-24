@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -40,7 +40,8 @@ class JemViewEventslist extends JEMView
 		$itemid 		= $jinput->getInt('id', 0) . ':' . $jinput->getInt('Itemid', 0);
 		$print			= $jinput->getBool('print');
 		$admin			= JEMUser::superuser();
-		$task 			= JRequest::getCmd('task');
+		$task 			= $jinput->getCmd('task');
+		$template 		= $app->getTemplate();
 
 		// Load css
 		JemHelper::loadCss('jem');
@@ -52,10 +53,6 @@ class JemViewEventslist extends JEMView
 			$document->setMetaData('robots', 'noindex, nofollow');
 		}
 		
-		# load JS
-		JHtml::_('bootstrap.framework');
-		JHtml::_('script', 'com_jem/dropdown.js', false, true);
-
 		// userstate variables
 		$filter_order		= $app->getUserStateFromRequest('com_jem.eventslist.'.$itemid.'.filter_order', 'filter_order', 'a.dates', 'cmd');
 		$filter_order_DirDefault = 'ASC';
@@ -83,7 +80,7 @@ class JemViewEventslist extends JEMView
 		}
 
 		// params
-		$pagetitle		= $params->def('page_title', $menuitem ? $menuitem->title : COM_JEM_EVENTS);
+		$pagetitle		= $params->def('page_title', $menuitem ? $menuitem->title : JText::_('COM_JEM_EVENTS'));
 		$pageheading 	= $params->def('page_heading', $params->get('page_title'));
 		$pageclass_sfx	= $params->get('pageclass_sfx');
 
@@ -155,20 +152,12 @@ class JemViewEventslist extends JEMView
 		if ($jemsettings->showcat == 1) {
 			$filters[] = JHtml::_('select.option', '4', JText::_('COM_JEM_CATEGORY'));
 		}
-		if ($jemsettings->showstate == 1) {
-			$filters[] = JHtml::_('select.option', '5', JText::_('COM_JEM_STATE'));
-		}
 		$lists['filter'] = JHtml::_('select.genericlist', $filters, 'filter_type', array('size'=>'1','class'=>'inputbox input-medium'), 'value', 'text', $filter_type );
 		$lists['search']= $search;
 
 		// Create the pagination object
 		$this->pagination 		= $this->get('Pagination');
-		$this->state			= $this->get('State');
-		$this->filterForm		= $this->get('FilterForm');
-		$this->activeFilters	= $this->get('ActiveFilters');
 		
-		$this->filterButton		= false;
-
 		$this->lists			= $lists;
 		$this->action			= $uri->toString();
 		$this->rows				= $rows;

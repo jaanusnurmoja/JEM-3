@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -29,12 +29,9 @@ $function = JFactory::getApplication()->input->getCmd('function', 'jSelectContac
 	<h1 class='componentheading'>
 		<?php echo JText::_('COM_JEM_SELECT_CONTACT'); ?>
 	</h1>
-
-	<div class="clr"></div>
-
 	<form action="<?php echo JRoute::_('index.php?option=com_jem&view=editevent&layout=choosecontact&tmpl=component&function='.$this->escape($function).'&'.JSession::getFormToken().'=1'); ?>" method="post" name="adminForm" id="adminForm">
-		<div id="jem_filter" class="floattext">
-			<div class="jem_fleft">
+		<div id="jem_filter" class="clearfix">
+			<div class="pull-left">
 				<?php
 				echo $this->searchfilter.'&nbsp;';
 				?>
@@ -45,7 +42,7 @@ $function = JFactory::getApplication()->input->getCmd('function', 'jSelectContac
 					<button type="button" class="btn" onclick="if (window.parent) window.parent.<?php echo $this->escape($function);?>('', '<?php echo JText::_('COM_JEM_SELECT_CONTACT') ?>');"><?php echo JText::_('COM_JEM_NOCONTACT')?></button>
 				</div>
 			</div>
-			<div class="jem_fright">
+			<div class="pull-right">
 				<?php
 				echo $this->pagination->getLimitBox();
 				?>

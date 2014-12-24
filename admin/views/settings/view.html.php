@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -56,8 +56,8 @@ class JEMViewSettings extends JViewLegacy {
 		}
 
 		// Load Script
-		$document->addScript(JUri::root().'media/com_jem/js/colorpicker.js');
-
+		JHtml::_('script', 'com_jem/colorpicker.js', false, true);
+		
 		JHtml::_('behavior.framework');
 		
 		$app = JFactory::getApplication();

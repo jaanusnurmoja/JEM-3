@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -57,7 +57,7 @@ class JemControllerAttendees extends JControllerLegacy
 		$cache = JFactory::getCache('com_jem');
 		$cache->clean();
 
-		$msg = $total.' '.JText::_('COM_JEM_REGISTERED_USERS_DELETED');
+		$msg = $total.' '.JText::_('COM_JEM_ATTENDEES_REGISTERED_USERS_DELETED');
 
 		$this->setRedirect('index.php?option=com_jem&view=attendees&eid='.$eventid, $msg);
 	}

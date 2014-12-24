@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -121,14 +121,18 @@ class JemModelEvents extends JModelList
 		);
 		$query->from($db->quoteName('#__jem_events').' AS a');
 
-		// Join over the users for the checked out user.
+		// Join over venue data.
 		$query->select('loc.venue, loc.city, loc.state, loc.checked_out AS vchecked_out');
 		$query->join('LEFT', '#__jem_venues AS loc ON loc.id = a.locid');
 
 		// Join over the users for the checked out user.
 		$query->select('uc.name AS editor');
 		$query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
-
+		
+		// Join over the asset groups.
+		$query->select('ag.title AS access_level')
+		->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+		
 		// Join over the user who modified the event.
 		$query->select('um.name AS modified_by');
 		$query->join('LEFT', '#__users AS um ON um.id = a.modified_by');
@@ -258,7 +262,7 @@ class JemModelEvents extends JModelList
 			$item->categories = $this->getCategories($item->id);
 
 			# check if the item-categories is empty
-			# in case of filtering we will unset the items without the reqeusted category
+			# in case of filtering we will unset the items without the requested category
 
 			if($search) {
 				if ($filter == 4) {

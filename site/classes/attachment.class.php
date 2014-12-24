@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 3.0.2
+ * @version 3.0.5
  * @package JEM
  * @copyright (C) 2013-2014 joomlaeventmanager.net
  * @copyright (C) 2005-2009 Christoph Lukes
@@ -65,6 +65,8 @@ abstract class JemAttachment {
 					JError::raiseWarning(0, JText::_('COM_JEM_ERROR_COULD_NOT_CREATE_FOLDER').': '.$path);
 					return false;
 				}
+				$file_content = '<!DOCTYPE html><title></title>';
+				JFile::write($path.'/index.html', $file_content);
 			}
 
 			$sanitizedFilename = JemHelper::sanitize($path, $file);
