@@ -209,6 +209,7 @@ div#jem .flyerimage img {
 div#jem div.image {
 	color: #C09853;
 	padding: 7px;
+	float: right;
 	text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5);
 }
 
