@@ -647,6 +647,12 @@
 				description="COM_JEM_EVENT_FIELD_ICAL_FILENAME_DESC"
 				required="false"
 			/>
+		<field name="content_plugin" type="textarea"
+			class="inputbox"
+			rows="3" cols="60"
+			label="JFIELD_CONTENT_PLUGIN_LABEL"
+			description="JFIELD_CONTENT_PLUGIN_DESC"
+		/>
 		</fieldset>
 
 		<fieldset name="globalparam"

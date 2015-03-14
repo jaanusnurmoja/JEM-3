@@ -211,19 +211,10 @@ $mapType = $this->mapType;
 
 <!-- AUTHOR -->
 		<?php if ($params->get('event_show_author') && !empty($this->item->author)) : ?>
-		<dt class="createdby"><?php echo JText::_('COM_JEM_CONTACT'); ?></dt>
+		<dt class="createdby"><?php echo JText::_('COM_JEM_EVENT_CREATED_BY_LABEL'); ?></dt>
 		<dd class="createdby">
 		<?php $author = $this->item->created_by_alias ? $this->item->created_by_alias : $this->item->author; ?>
-		<?php if (!empty($this->item->contactid2) && $params->get('event_link_author') == true): ?>
-		<?php
-		$needle = 'index.php?option=com_contact&view=contact&id=' . $this->item->contactid2;
-		$menu = JFactory::getApplication()->getMenu();
-		$item = $menu->getItems('link', $needle, true);
-		$cntlink = !empty($item) ? $needle . '&Itemid=' . $item->id : $needle;
-		?>
-		<?php echo JText::sprintf('COM_JEM_CONTACT', JHtml::_('link', JRoute::_($cntlink), $author)); ?>
-		<?php else: ?>
-		<?php echo JText::sprintf('COM_JEM_CONTACT', $author); ?>
+		<?php echo JText::sprintf('COM_JEM_EVENT_CREATED_BY', $author); ?>
 		</dd>
 		<?php endif; ?>
 		</dl>
@@ -475,6 +466,7 @@ $mapType = $this->mapType;
 		</div>
 	<?php endif; ?>
 
+					<jdoc:include type="modules" name="position-4" style="none" />
 
 
 	<?php if ($this->item->registra == 1) : ?>

@@ -122,7 +122,7 @@ class JemViewEvent extends JEMView
 		}
 
 		if ($item->params->get('show_intro', '1')=='1') {
-			$item->text = $item->introtext.' '.$item->fulltext;
+			$item->text = $item->introtext . ' ' . $item->fulltext;
 		}
 		elseif ($item->fulltext) {
 			$item->text = $item->fulltext;
@@ -130,6 +130,7 @@ class JemViewEvent extends JEMView
 		else  {
 			$item->text = $item->introtext;
 		}
+		$item->text .= $this->settings->get('content_plugin', '') != '' ? ' ' . $this->settings->get('content_plugin') : '';
 
 		// Process the content plugins //
 		JPluginHelper::importPlugin('content');
