@@ -466,9 +466,6 @@ $mapType = $this->mapType;
 		</div>
 	<?php endif; ?>
 
-					<jdoc:include type="modules" name="position-4" style="none" />
-
-
 	<?php if ($this->item->registra == 1) : ?>
 		<h2 class="register"><?php echo JText::_('COM_JEM_REGISTRATION'); ?></h2>
 			<?php echo $this->loadTemplate('attendees'); ?>
